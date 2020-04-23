@@ -12,12 +12,56 @@ $ npm install vue-tailwind-picker --save
 ```
 
 ## Usage
+Vue.js
+
+```javascript
+import VueTailwindPicker from 'vue-tailwind-picker'
+export default {
+  components: {
+    VueTailwindPicker  
+  }
+}
+```
+
+Nuxt.js
+Create plugin inside plugins directory e.g v-tailwind-picker.js
 
 ```javascript
 import Vue from 'vue'
 import VueTailwindPicker from 'vue-tailwind-picker'
 
 Vue.use(VueTailwindPicker)
+```
+
+then add to nuxt.config.js
+```javascript
+{
+  plugins: [
+    '~/plugins/v-tailwind-picker'
+  ]
+}
+```
+
+## Example on nuxt.js
+
+```html
+<client-only>
+    <VueTailwindPicker
+        start-date="2020-01-01"
+        format-date="YYYY-MM-DD"
+        format-display="ddd, DD MMM YYYY"
+        :inline="false"
+        :classic-theme="true"
+        @tailwind-change="onChangeDate"
+    >
+    <input
+      v-model="picker"
+      type="text"
+      placeholder="Datepicker"
+      readonly
+    />
+    </VueTailwindPicker>
+</client-only>
 ```
 
 ## Options/Props
@@ -74,6 +118,12 @@ Vue.use(VueTailwindPicker)
     <td>false</td>
     <td>true</td>
   </tr>
+  <tr>
+    <td>@tailwindChange</td>
+    <td>Event</td>
+    <td>false</td>
+    <td></td>
+  </tr>
   </tbody>
 </table>
 
@@ -106,6 +156,9 @@ className: {
   }),
 },
 ```
+
+## Contributing
+Please contribute...
 
 ## License
 
