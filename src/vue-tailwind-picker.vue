@@ -24,7 +24,7 @@
               </div>
             </div>
 
-            <div class="relative px-1 py-2">
+            <div class="relative px-1 py-1">
               <div class="absolute inset-0" :class="className.pagination.backgroundColor"></div>
               <div class="flex justify-between items-center relative">
                 <div class="flex-shrink-0 w-8">
@@ -54,14 +54,14 @@
                 </div>
                 <div class="flex flex-1" :class="className.pagination.textColor">
                   <div
-                    class="flex-1 rounded overflow-hidden py-1 ml-2 mr-1 font-semibold text-center cursor-pointer transition duration-150 ease-out"
+                    class="flex-1 rounded overflow-hidden py-2 ml-2 mr-1 font-semibold text-center cursor-pointer transition duration-150 ease-out"
                     @click="toggleMonth()"
                     :class="`hover:${className.pagination.hover}`"
                   >
                     {{ today.format('MMMM') }}
                   </div>
                   <div
-                    class="flex-1 rounded overflow-hidden py-1 mr-2 ml-1 font-semibold text-center cursor-pointer transition duration-150 ease-out"
+                    class="flex-1 rounded overflow-hidden py-2 mr-2 ml-1 font-semibold text-center cursor-pointer transition duration-150 ease-out"
                     @click="toggleYear()"
                     :class="`hover:${className.pagination.hover}`"
                   >
@@ -250,30 +250,30 @@
                     </div>
                   </div>
                 </div>
-
-                <div
-                  v-if="currentPicker.filter(o => o.$events !== undefined).length > 0 && !visibleMonth && !visibleYear"
-                  id="v-tailwind-picker-footer"
-                >
-                  <transition-group
-                    name="v-tailwind-picker-footer"
-                    tag="div"
-                    class="flex flex-wrap border-t px-2 py-1"
-                    :class="className.borderColor"
-                  >
-                    <div
-                      v-for="(event, i) in currentPicker.filter(o => o.$events !== undefined)"
-                      :key="`${i}-event`"
-                      class="w-full flex"
-                    >
-                      <div class="flex-shrink-0">
-                        <div class="text-xs">{{ dayjs(event.$events.date, formatDate).$D }}</div>
-                      </div>
-                      <div class="text-xs mx-1">{{ event.$events.event }}</div>
-                    </div>
-                  </transition-group>
-                </div>
               </transition>
+            </div>
+
+            <div
+              v-if="currentPicker.filter(o => o.$events !== undefined).length > 0 && !visibleMonth && !visibleYear"
+              id="v-tailwind-picker-footer"
+            >
+              <transition-group
+                name="v-tailwind-picker-footer"
+                tag="div"
+                class="flex flex-wrap border-t px-2 py-1"
+                :class="className.borderColor"
+              >
+                <div
+                  v-for="(event, i) in currentPicker.filter(o => o.$events !== undefined)"
+                  :key="`${i}-event`"
+                  class="w-full flex"
+                >
+                  <div class="flex-shrink-0">
+                    <div class="text-xs">{{ dayjs(event.$events.date, formatDate).$D }}</div>
+                  </div>
+                  <div class="text-xs mx-1">{{ event.$events.event }}</div>
+                </div>
+              </transition-group>
             </div>
           </div>
         </div>
