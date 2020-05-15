@@ -44,15 +44,37 @@ then add to nuxt.config.js
 
 ## Example on nuxt.js
 
-```html
+```vue
+<template>
 <client-only>
     <VueTailwindPicker
         start-date="2020-01-01"
+        end-date="2021-12-31"
         format-date="YYYY-MM-DD"
-        format-display="ddd, DD MMM YYYY"
-        :inline="false"
-        :classic-theme="true"
-        @tailwind-change="onChangeDate"
+        :inline="true"
+        :className="{
+            base: 'gray-100',
+            hover: 'gray-200',
+            color: {
+                default: 'gray-700',
+                holiday: 'red-400',
+                weekend: 'green-400',
+                selected: 'red-500',
+                event: 'indigo-500',
+            },
+        }"
+        :event-date="[
+            {
+                date: '2020-01-01',
+                description: 'Happy new year',
+                holiday: true,
+            },
+        ]"
+        @change="
+            (value) => {
+                picker = value
+            }
+        "
     >
     <input
       v-model="picker"
@@ -62,6 +84,17 @@ then add to nuxt.config.js
     />
     </VueTailwindPicker>
 </client-only>
+</template>
+
+<script>
+export default {
+    data() {
+        return {
+            picker: ''
+        }
+    }
+}
+</script>
 ```
 
 ## Options/Props
@@ -95,31 +128,19 @@ then add to nuxt.config.js
     <td>YYYY-MM-DD</td>
   </tr>
   <tr>
-    <td>formatDisplay</td>
-    <td>String</td>
-    <td>false</td>
-    <td>YYYY-MM-DD</td>
-  </tr>
-  <tr>
-    <td>tailwindPickerValue</td>
-    <td>String</td>
-    <td>false</td>
-    <td>null or ''</td>
-  </tr>
-  <tr>
     <td>inline</td>
     <td>Boolean</td>
     <td>false</td>
-    <td>true</td>
-  </tr>
-  <tr>
-    <td>classicTheme</td>
-    <td>Boolean</td>
     <td>false</td>
-    <td>true</td>
   </tr>
   <tr>
-    <td>@tailwindChange</td>
+    <td>className</td>
+    <td>Object</td>
+    <td>false</td>
+    <td>see example</td>
+  </tr>
+  <tr>
+    <td>@change</td>
     <td>Event</td>
     <td>false</td>
     <td></td>
@@ -127,38 +148,8 @@ then add to nuxt.config.js
   </tbody>
 </table>
 
-### other props for matching with tailwindcss
-
-```javascript
-... // e.g
-className: {
-  type: Object,
-  required: false,
-  default: () => ({
-    shadow: 'shadow',
-    borderColor: 'border-gray-300',
-    textColor: 'text-gray-800',
-    pagination: {
-      backgroundColor: 'bg-teal-500',
-      hover: 'bg-teal-600',
-      textColor: 'text-gray-100',
-    },
-    monthAndYear: {
-      borderColor: 'border-teal-500',
-    },
-    calendar: {
-      selected: {
-        backgroundColor: 'bg-teal-500',
-        textColor: 'text-white',
-        borderColor: 'border-teal-600',
-      },
-    },
-  }),
-},
-```
-
 ## Contributing
-Please contribute...
+please contribute to be better...
 
 ## License
 

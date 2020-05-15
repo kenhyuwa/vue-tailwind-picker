@@ -14,6 +14,8 @@ export default {
       'dayjs/plugin/isBetween': 'dayjs/plugin/isBetween',
       'dayjs/plugin/localizedFormat': 'dayjs/plugin/localizedFormat',
       'dayjs/plugin/advancedFormat': 'dayjs/plugin/advancedFormat',
+      'dayjs/plugin/isSameOrBefore': 'dayjs/plugin/isSameOrBefore',
+      'dayjs/plugin/isSameOrAfter': 'dayjs/plugin/isSameOrAfter',
     },
   },
   external: [
@@ -23,6 +25,8 @@ export default {
     'dayjs/plugin/isBetween',
     'dayjs/plugin/localizedFormat',
     'dayjs/plugin/advancedFormat',
+    'dayjs/plugin/isSameOrBefore',
+    'dayjs/plugin/isSameOrAfter',
   ],
   plugins: [
     commonjs(),
