@@ -1,5 +1,5 @@
 # Vue Tailwind Picker
->Datepicker for vue.js & tailwindcss, build with dayjs
+>Datepicker for vue.js of tailwindcss & dayjs
 
 <p align="center">
   <img width="700px" src="https://raw.githubusercontent.com/kenhyuwa/vue-tailwind-picker/master/vue-tailwind-picker.png?raw=true">
@@ -14,13 +14,13 @@ $ npm install vue-tailwind-picker --save
 #### CDN
 
 ```html
-<script src="https://unpkg.com/vue-tailwind-picker@1.0.0/dist/vue-tailwind-picker.min.js"></script>
+<script src="https://unpkg.com/vue-tailwind-picker@1.0.1/dist/vue-tailwind-picker.min.js"></script>
 ```
 
 If you are using native ES Modules, there is also an ES Modules compatible build:
 ```html
 <script type="module">
-  import VueTailwindPicker from 'https://cdn.jsdelivr.net/npm/vue-tailwind-picker@1.0.0/dist/vue-tailwind-picker.esm.js'
+  import VueTailwindPicker from 'https://cdn.jsdelivr.net/npm/vue-tailwind-picker@1.0.1/dist/vue-tailwind-picker.esm.js'
 </script>
 ```
 
@@ -59,44 +59,45 @@ then add to nuxt.config.js
 
 ```vue
 <template>
-<client-only>
-    <VueTailwindPicker
-        start-date="2020-01-01"
-        end-date="2021-12-31"
-        format-date="YYYY-MM-DD"
-        :inline="true"
-        :className="{
-            base: 'gray-100',
-            hover: 'gray-200',
-            color: {
-                default: 'gray-700',
-                holiday: 'red-400',
-                weekend: 'green-400',
-                selected: 'red-500',
-                event: 'indigo-500',
-            },
-        }"
-        :event-date="[
-            {
-                date: '2020-01-01',
-                description: 'Happy new year',
-                holiday: true,
-            },
-        ]"
-        @change="
-            (value) => {
-                picker = value
-            }
-        "
-    >
-    <input
-      v-model="picker"
-      type="text"
-      placeholder="Datepicker"
-      readonly
-    />
-    </VueTailwindPicker>
-</client-only>
+    <client-only>
+        <VueTailwindPicker
+            start-date="2020-01-01"
+            end-date="2021-12-31"
+            format-date="YYYY-MM-DD"
+            :inline="true"
+            :class-name="{
+                base: 'gray-100',
+                hover: 'gray-200',
+                color: {
+                    default: 'gray-700',
+                    holiday: 'red-400',
+                    weekend: 'green-400',
+                    selected: 'red-500',
+                    event: 'indigo-500',
+                },
+            }"
+            :event-date="[
+                {
+                    date: '2020-01-01',
+                    description: 'Happy new year',
+                    holiday: true,
+                },
+                {
+                    date: '2020-02-14',
+                    description: 'Happy valentine day',
+                    holiday: false,
+                },
+            ]"
+            @change="(v) => (picker = v)"
+        >
+        <input
+          v-model="picker"
+          type="text"
+          placeholder="Datepicker"
+          readonly
+        />
+        </VueTailwindPicker>
+    </client-only>
 </template>
 
 <script>
@@ -156,7 +157,7 @@ export default {
     <td>@change</td>
     <td>Event</td>
     <td>false</td>
-    <td></td>
+    <td>$emit()</td>
   </tr>
   </tbody>
 </table>

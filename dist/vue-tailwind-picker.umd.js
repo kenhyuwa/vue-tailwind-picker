@@ -127,13 +127,18 @@
                   var excludedEl = vnode.context.$refs[refName]
                   // See if this excluded element
                   // is the same element the user just clicked on
-                  clickedOnExcludedEl = excludedEl.contains(e.target)
+                  clickedOnExcludedEl = excludedEl
+                    ? excludedEl.contains(e.target)
+                    : false
                 }
               })
             }
 
             // We check to see if the clicked element is not
             // the dialog element and not excluded
+            if (clickedOnExcludedEl) {
+              vnode.context[handler]()
+            }
             if (!el.contains(e.target) && !clickedOnExcludedEl) {
               // If the clicked element is outside the dialog
               // and not the button, then call the outside-click handler
@@ -207,6 +212,12 @@
         type: Boolean,
         required: false,
         default: false,
+      },
+      // Next future
+      autoClose: {
+        type: Boolean,
+        required: false,
+        default: true,
       },
       className: {
         type: Object,
@@ -308,10 +319,8 @@
       visiblePrev: function visiblePrev() {
         if (!this.dateRange) {
           var endOf = this.today.subtract(1, 'month').endOf('month')
-          return (
-            this.startDatepicker.diff(endOf, 'day') <=
-            this.today.daysInMonth() - this.today.$D
-          )
+          var diff = this.startDatepicker.diff(endOf, 'day')
+          return diff < this.today.daysInMonth() - this.today.$D
         }
         return true
       },
@@ -588,517 +597,543 @@
     var _c = _vm._self._c || _h
     return _c(
       'div',
-      { ref: 'vTailwindPickerRef', staticClass: 'relative w-full' },
-      [
-        _c(
-          'div',
+      {
+        directives: [
           {
-            directives: [
-              {
-                name: 'closable',
-                rawName: 'v-closable',
-                value: {
-                  handler: 'onAway',
-                },
-                expression: "{\n      handler: 'onAway',\n    }",
-              },
-            ],
-            on: { click: _vm.onFeedBack },
+            name: 'closable',
+            rawName: 'v-closable',
+            value: {
+              handler: 'onAway',
+              exclude: ['currentPicker'],
+            },
+            expression:
+              "{\n    handler: 'onAway',\n    exclude: ['currentPicker'],\n  }",
           },
-          [
-            _vm._t('default'),
-            _vm._v(' '),
-            _c('transition', { attrs: { name: 'v-tailwind-picker' } }, [
+        ],
+        ref: 'vTailwindPickerRef',
+        staticClass: 'relative',
+        on: { click: _vm.onFeedBack },
+      },
+      [
+        _vm._t('default'),
+        _vm._v(' '),
+        _c('transition', { attrs: { name: 'v-tailwind-picker' } }, [
+          _c(
+            'div',
+            {
+              directives: [
+                {
+                  name: 'show',
+                  rawName: 'v-show',
+                  value: _vm.showPicker || _vm.inline,
+                  expression: 'showPicker || inline',
+                },
+              ],
+            },
+            [
               _c(
                 'div',
                 {
-                  directives: [
-                    {
-                      name: 'show',
-                      rawName: 'v-show',
-                      value: _vm.showPicker || _vm.inline,
-                      expression: 'showPicker || inline',
-                    },
+                  staticClass: 'bg-transparent mt-3 z-10',
+                  class: [
+                    { 'inline-mode': _vm.inline },
+                    _vm.inline ? 'static' : 'absolute bottom-0 inset-x-0',
+                    'text-' + _vm.className.hover,
                   ],
+                  attrs: { id: 'v-tailwind-picker' },
                 },
                 [
                   _c(
                     'div',
                     {
-                      staticClass: 'bg-transparent mt-3 z-10',
+                      staticClass:
+                        'w-88 h-auto max-w-xs transition-all duration-150 ease-linear bg-white rounded overflow-hidden border',
                       class: [
-                        { 'inline-mode': _vm.inline },
-                        _vm.inline ? 'static' : 'absolute bottom-0 inset-x-0',
-                        'text-' + _vm.className.hover,
+                        'border-' + _vm.className.hover,
+                        'text-' + _vm.className.color.default,
+                        _vm.inline ? 'shadow-xs' : 'shadow-md',
                       ],
-                      attrs: { id: 'v-tailwind-picker' },
                     },
                     [
-                      _c(
-                        'div',
-                        {
-                          staticClass:
-                            'w-88 h-auto max-w-xs transition-all duration-150 ease-linear bg-white rounded overflow-hidden border',
-                          class: [
-                            'border-' + _vm.className.hover,
-                            'text-' + _vm.className.color.default,
-                            _vm.inline ? 'shadow-xs' : 'shadow-md',
-                          ],
-                        },
-                        [
-                          _c(
-                            'div',
-                            { attrs: { id: 'v-tailwind-picker-header' } },
-                            [
-                              _c(
-                                'div',
-                                {
-                                  staticClass:
-                                    'flex flex-row justify-center items-center px-2 py-1',
-                                },
-                                [
-                                  _c(
-                                    'div',
-                                    {
-                                      staticClass:
-                                        'flex items-center text-2xl xl:text-3xl',
-                                    },
-                                    [
-                                      _vm._v(
-                                        '\n                  ' +
-                                          _vm._s(_vm.today.format('DD')) +
-                                          '\n                ',
-                                      ),
-                                    ],
-                                  ),
-                                  _vm._v(' '),
-                                  _c('div', { staticClass: 'mx-1' }, [
-                                    _c(
-                                      'div',
-                                      { staticClass: 'leading-none text-xxs' },
-                                      [
-                                        _vm._v(
-                                          '\n                    ' +
-                                            _vm._s(_vm.today.format('dddd')) +
-                                            '\n                  ',
-                                        ),
-                                      ],
-                                    ),
-                                    _vm._v(' '),
-                                    _c(
-                                      'div',
-                                      { staticClass: 'leading-none text-xs' },
-                                      [
-                                        _vm._v(
-                                          '\n                    ' +
-                                            _vm._s(
-                                              _vm.today.format('MMMM YYYY'),
-                                            ) +
-                                            '\n                  ',
-                                        ),
-                                      ],
-                                    ),
-                                  ]),
-                                ],
-                              ),
-                            ],
-                          ),
-                          _vm._v(' '),
-                          _c('div', { staticClass: 'relative p-1' }, [
-                            _c('div', {
-                              staticClass: 'absolute inset-0',
-                              class: 'bg-' + _vm.className.base,
-                            }),
-                            _vm._v(' '),
+                      _c('div', { attrs: { id: 'v-tailwind-picker-header' } }, [
+                        _c(
+                          'div',
+                          {
+                            staticClass:
+                              'flex flex-row justify-center items-center px-2 py-1',
+                          },
+                          [
                             _c(
                               'div',
                               {
                                 staticClass:
-                                  'flex justify-between items-center relative',
+                                  'flex items-center text-2xl xl:text-3xl',
                               },
                               [
-                                _c(
-                                  'div',
-                                  { staticClass: 'flex-shrink-0 w-8' },
-                                  [
-                                    _c(
-                                      'transition',
-                                      {
-                                        attrs: {
-                                          name:
-                                            'v-tailwind-picker-chevron-left',
-                                        },
-                                      },
-                                      [
-                                        !_vm.enableMonth && !_vm.enableYear
-                                          ? _c(
-                                              'div',
-                                              {
-                                                staticClass:
-                                                  'rounded-full overflow-hidden',
-                                              },
-                                              [
-                                                _c(
-                                                  'div',
-                                                  {
-                                                    staticClass:
-                                                      'transition duration-150 ease-out p-2',
-                                                    class: [
-                                                      _vm.visiblePrev
-                                                        ? 'cursor-pointer'
-                                                        : 'cursor-not-allowed opacity-30',
-                                                      'hover:bg-' +
-                                                        _vm.className.hover,
-                                                    ],
-                                                    on: {
-                                                      click: function ($event) {
-                                                        return _vm.onPrevious()
-                                                      },
-                                                    },
-                                                  },
-                                                  [
-                                                    _c(
-                                                      'svg',
-                                                      {
-                                                        staticClass:
-                                                          'h-4 w-auto',
-                                                        attrs: {
-                                                          xmlns:
-                                                            'http://www.w3.org/2000/svg',
-                                                          viewBox:
-                                                            '0 0 511.641 511.641',
-                                                          fill: 'currentColor',
-                                                        },
-                                                      },
-                                                      [
-                                                        _c('path', {
-                                                          attrs: {
-                                                            d:
-                                                              'M148.32 255.76L386.08 18c4.053-4.267 3.947-10.987-.213-15.04a10.763 10.763 0 00-14.827 0L125.707 248.293a10.623 10.623 0 000 15.04L371.04 508.667c4.267 4.053 10.987 3.947 15.04-.213a10.763 10.763 0 000-14.827L148.32 255.76z',
-                                                          },
-                                                        }),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            )
-                                          : _vm._e(),
-                                      ],
-                                    ),
-                                  ],
-                                  1,
-                                ),
-                                _vm._v(' '),
-                                _c('div', { staticClass: 'flex flex-1' }, [
-                                  _c(
-                                    'div',
-                                    {
-                                      staticClass:
-                                        'flex-1 rounded overflow-hidden py-1 ml-2 mr-1 text-center cursor-pointer transition duration-150 ease-out',
-                                      class: [
-                                        _vm.enableMonth
-                                          ? 'bg-' + _vm.className.hover
-                                          : '',
-                                        'hover:bg-' + _vm.className.hover,
-                                      ],
-                                      on: {
-                                        click: function ($event) {
-                                          return _vm.toggleMonth()
-                                        },
-                                      },
-                                    },
-                                    [
-                                      _vm._v(
-                                        '\n                    ' +
-                                          _vm._s(_vm.today.format('MMMM')) +
-                                          '\n                  ',
-                                      ),
-                                    ],
-                                  ),
-                                  _vm._v(' '),
-                                  _c(
-                                    'div',
-                                    {
-                                      staticClass:
-                                        'flex-1 rounded overflow-hidden py-1 mr-2 ml-1 text-center cursor-pointer transition duration-150 ease-out',
-                                      class: [
-                                        _vm.enableYear
-                                          ? 'bg-' + _vm.className.hover
-                                          : '',
-                                        'hover:bg-' + _vm.className.hover,
-                                      ],
-                                      on: {
-                                        click: function ($event) {
-                                          return _vm.toggleYear()
-                                        },
-                                      },
-                                    },
-                                    [
-                                      _vm._v(
-                                        '\n                    ' +
-                                          _vm._s(_vm.today.$y) +
-                                          '\n                  ',
-                                      ),
-                                    ],
-                                  ),
-                                ]),
-                                _vm._v(' '),
-                                _c(
-                                  'div',
-                                  { staticClass: 'flex-shrink-0 w-8' },
-                                  [
-                                    _c(
-                                      'transition',
-                                      {
-                                        attrs: {
-                                          name:
-                                            'v-tailwind-picker-chevron-right',
-                                        },
-                                      },
-                                      [
-                                        !_vm.enableMonth && !_vm.enableYear
-                                          ? _c(
-                                              'div',
-                                              {
-                                                staticClass:
-                                                  'rounded-full overflow-hidden',
-                                              },
-                                              [
-                                                _c(
-                                                  'div',
-                                                  {
-                                                    staticClass:
-                                                      'transition duration-150 ease-out p-2',
-                                                    class: [
-                                                      _vm.visibleNext
-                                                        ? 'cursor-pointer'
-                                                        : 'cursor-not-allowed opacity-30',
-                                                      'hover:bg-' +
-                                                        _vm.className.hover,
-                                                    ],
-                                                    on: {
-                                                      click: function ($event) {
-                                                        return _vm.onNext()
-                                                      },
-                                                    },
-                                                  },
-                                                  [
-                                                    _c(
-                                                      'svg',
-                                                      {
-                                                        staticClass:
-                                                          'h-4 w-auto',
-                                                        attrs: {
-                                                          xmlns:
-                                                            'http://www.w3.org/2000/svg',
-                                                          viewBox:
-                                                            '0 0 511.949 511.949',
-                                                          fill: 'currentColor',
-                                                        },
-                                                      },
-                                                      [
-                                                        _c('path', {
-                                                          attrs: {
-                                                            d:
-                                                              'M386.235 248.308L140.902 2.975c-4.267-4.053-10.987-3.947-15.04.213a10.763 10.763 0 000 14.827l237.76 237.76-237.76 237.867c-4.267 4.053-4.373 10.88-.213 15.04 4.053 4.267 10.88 4.373 15.04.213l.213-.213 245.333-245.333a10.624 10.624 0 000-15.041z',
-                                                          },
-                                                        }),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            )
-                                          : _vm._e(),
-                                      ],
-                                    ),
-                                  ],
-                                  1,
+                                _vm._v(
+                                  '\n                ' +
+                                    _vm._s(_vm.today.format('DD')) +
+                                    '\n              ',
                                 ),
                               ],
                             ),
-                          ]),
-                          _vm._v(' '),
-                          _c(
-                            'div',
-                            {
-                              staticClass:
-                                'smooth-scrolling overflow-x-hidden overflow-y-auto',
-                            },
-                            [
+                            _vm._v(' '),
+                            _c('div', { staticClass: 'mx-1' }, [
                               _c(
-                                'transition',
-                                { attrs: { name: 'v-tailwind-picker-body' } },
+                                'div',
+                                { staticClass: 'leading-none text-xxs' },
                                 [
-                                  !_vm.enableMonth && !_vm.enableYear
-                                    ? _c('div', { staticClass: 'relative' }, [
-                                        _c(
+                                  _vm._v(
+                                    '\n                  ' +
+                                      _vm._s(_vm.today.format('dddd')) +
+                                      '\n                ',
+                                  ),
+                                ],
+                              ),
+                              _vm._v(' '),
+                              _c(
+                                'div',
+                                { staticClass: 'leading-none text-xs' },
+                                [
+                                  _vm._v(
+                                    '\n                  ' +
+                                      _vm._s(_vm.today.format('MMMM YYYY')) +
+                                      '\n                ',
+                                  ),
+                                ],
+                              ),
+                            ]),
+                          ],
+                        ),
+                      ]),
+                      _vm._v(' '),
+                      _c('div', { staticClass: 'relative p-1' }, [
+                        _c('div', {
+                          staticClass: 'absolute inset-0',
+                          class: 'bg-' + _vm.className.base,
+                        }),
+                        _vm._v(' '),
+                        _c(
+                          'div',
+                          {
+                            staticClass:
+                              'flex justify-between items-center relative',
+                          },
+                          [
+                            _c(
+                              'div',
+                              { staticClass: 'flex-shrink-0 w-8' },
+                              [
+                                _c(
+                                  'transition',
+                                  {
+                                    attrs: {
+                                      name: 'v-tailwind-picker-chevron-left',
+                                    },
+                                  },
+                                  [
+                                    !_vm.enableMonth && !_vm.enableYear
+                                      ? _c(
                                           'div',
                                           {
                                             staticClass:
-                                              'flex flex-no-wrap py-2 border-b',
-                                            class:
-                                              'border-' + _vm.className.hover,
+                                              'rounded-full overflow-hidden',
                                           },
-                                          _vm._l(_vm.days, function (day, i) {
-                                            return _c(
+                                          [
+                                            _c(
                                               'div',
                                               {
-                                                key: day,
                                                 staticClass:
-                                                  'w-1/7 flex justify-center',
+                                                  'transition duration-150 ease-out p-2',
+                                                class: [
+                                                  _vm.visiblePrev
+                                                    ? 'cursor-pointer'
+                                                    : 'cursor-not-allowed opacity-30',
+                                                  'hover:bg-' +
+                                                    _vm.className.hover,
+                                                ],
+                                                on: {
+                                                  click: function ($event) {
+                                                    return _vm.onPrevious()
+                                                  },
+                                                },
                                               },
                                               [
                                                 _c(
-                                                  'div',
+                                                  'svg',
                                                   {
-                                                    staticClass:
-                                                      'leading-relaxed text-sm',
-                                                    class: [
-                                                      i === 0
-                                                        ? 'text-' +
-                                                          _vm.className.color
-                                                            .holiday
-                                                        : i === 5
-                                                        ? 'text-' +
-                                                          _vm.className.color
-                                                            .weekend
-                                                        : '',
-                                                    ],
+                                                    staticClass: 'h-4 w-auto',
+                                                    attrs: {
+                                                      xmlns:
+                                                        'http://www.w3.org/2000/svg',
+                                                      viewBox:
+                                                        '0 0 511.641 511.641',
+                                                      fill: 'currentColor',
+                                                    },
                                                   },
                                                   [
-                                                    _vm._v(
-                                                      '\n                        ' +
-                                                        _vm._s(day) +
-                                                        '\n                      ',
-                                                    ),
+                                                    _c('path', {
+                                                      attrs: {
+                                                        d:
+                                                          'M148.32 255.76L386.08 18c4.053-4.267 3.947-10.987-.213-15.04a10.763 10.763 0 00-14.827 0L125.707 248.293a10.623 10.623 0 000 15.04L371.04 508.667c4.267 4.053 10.987 3.947 15.04-.213a10.763 10.763 0 000-14.827L148.32 255.76z',
+                                                      },
+                                                    }),
                                                   ],
                                                 ),
                                               ],
-                                            )
-                                          }),
-                                          0,
-                                        ),
-                                        _vm._v(' '),
-                                        _c(
+                                            ),
+                                          ],
+                                        )
+                                      : _vm._e(),
+                                  ],
+                                ),
+                              ],
+                              1,
+                            ),
+                            _vm._v(' '),
+                            _c('div', { staticClass: 'flex flex-1' }, [
+                              _c(
+                                'div',
+                                {
+                                  staticClass:
+                                    'flex-1 rounded overflow-hidden py-1 ml-2 mr-1 text-center cursor-pointer transition duration-150 ease-out',
+                                  class: [
+                                    _vm.enableMonth
+                                      ? 'bg-' + _vm.className.hover
+                                      : '',
+                                    'hover:bg-' + _vm.className.hover,
+                                  ],
+                                  on: {
+                                    click: function ($event) {
+                                      return _vm.toggleMonth()
+                                    },
+                                  },
+                                },
+                                [
+                                  _vm._v(
+                                    '\n                  ' +
+                                      _vm._s(_vm.today.format('MMMM')) +
+                                      '\n                ',
+                                  ),
+                                ],
+                              ),
+                              _vm._v(' '),
+                              _c(
+                                'div',
+                                {
+                                  staticClass:
+                                    'flex-1 rounded overflow-hidden py-1 mr-2 ml-1 text-center cursor-pointer transition duration-150 ease-out',
+                                  class: [
+                                    _vm.enableYear
+                                      ? 'bg-' + _vm.className.hover
+                                      : '',
+                                    'hover:bg-' + _vm.className.hover,
+                                  ],
+                                  on: {
+                                    click: function ($event) {
+                                      return _vm.toggleYear()
+                                    },
+                                  },
+                                },
+                                [
+                                  _vm._v(
+                                    '\n                  ' +
+                                      _vm._s(_vm.today.$y) +
+                                      '\n                ',
+                                  ),
+                                ],
+                              ),
+                            ]),
+                            _vm._v(' '),
+                            _c(
+                              'div',
+                              { staticClass: 'flex-shrink-0 w-8' },
+                              [
+                                _c(
+                                  'transition',
+                                  {
+                                    attrs: {
+                                      name: 'v-tailwind-picker-chevron-right',
+                                    },
+                                  },
+                                  [
+                                    !_vm.enableMonth && !_vm.enableYear
+                                      ? _c(
                                           'div',
                                           {
                                             staticClass:
-                                              'flex flex-wrap relative',
+                                              'rounded-full overflow-hidden',
                                           },
                                           [
-                                            _vm._l(
-                                              _vm.previousPicker,
-                                              function (date, i) {
-                                                return _c(
-                                                  'div',
+                                            _c(
+                                              'div',
+                                              {
+                                                staticClass:
+                                                  'transition duration-150 ease-out p-2',
+                                                class: [
+                                                  _vm.visibleNext
+                                                    ? 'cursor-pointer'
+                                                    : 'cursor-not-allowed opacity-30',
+                                                  'hover:bg-' +
+                                                    _vm.className.hover,
+                                                ],
+                                                on: {
+                                                  click: function ($event) {
+                                                    return _vm.onNext()
+                                                  },
+                                                },
+                                              },
+                                              [
+                                                _c(
+                                                  'svg',
                                                   {
-                                                    key:
-                                                      '' +
-                                                      date.$D +
-                                                      date.$M +
-                                                      date.$y +
-                                                      '-previous',
-                                                    staticClass:
-                                                      'w-1/7 flex justify-center my-2px cursor-not-allowed',
-                                                    class: [
-                                                      i ===
-                                                      _vm.previousPicker
-                                                        .length -
-                                                        1
-                                                        ? 'rounded-r-full'
-                                                        : '',
-                                                      'bg-' +
-                                                        _vm.className.base,
-                                                    ],
+                                                    staticClass: 'h-4 w-auto',
+                                                    attrs: {
+                                                      xmlns:
+                                                        'http://www.w3.org/2000/svg',
+                                                      viewBox:
+                                                        '0 0 511.949 511.949',
+                                                      fill: 'currentColor',
+                                                    },
                                                   },
                                                   [
-                                                    _c(
-                                                      'div',
-                                                      {
-                                                        staticClass:
-                                                          'h-8 w-8 flex justify-center items-center',
-                                                        attrs: {
-                                                          'data-tailwind-datepicker':
-                                                            date.$d,
-                                                        },
+                                                    _c('path', {
+                                                      attrs: {
+                                                        d:
+                                                          'M386.235 248.308L140.902 2.975c-4.267-4.053-10.987-3.947-15.04.213a10.763 10.763 0 000 14.827l237.76 237.76-237.76 237.867c-4.267 4.053-4.373 10.88-.213 15.04 4.053 4.267 10.88 4.373 15.04.213l.213-.213 245.333-245.333a10.624 10.624 0 000-15.041z',
                                                       },
-                                                      [
-                                                        _c(
-                                                          'div',
-                                                          {
-                                                            staticClass:
-                                                              'text-xs opacity-75',
-                                                            class: [
-                                                              date.day() === 0
-                                                                ? 'text-' +
-                                                                  _vm.className
-                                                                    .color
-                                                                    .holiday
-                                                                : date.day() ===
-                                                                  5
-                                                                ? 'text-' +
-                                                                  _vm.className
-                                                                    .color
-                                                                    .weekend
-                                                                : '',
-                                                            ],
-                                                          },
-                                                          [
-                                                            _vm._v(
-                                                              '\n                          ' +
-                                                                _vm._s(
-                                                                  date.$D,
-                                                                ) +
-                                                                '\n                        ',
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
+                                                    }),
                                                   ],
-                                                )
-                                              },
+                                                ),
+                                              ],
                                             ),
-                                            _vm._v(' '),
-                                            _vm._l(_vm.currentPicker, function (
-                                              date,
-                                            ) {
-                                              return _c(
+                                          ],
+                                        )
+                                      : _vm._e(),
+                                  ],
+                                ),
+                              ],
+                              1,
+                            ),
+                          ],
+                        ),
+                      ]),
+                      _vm._v(' '),
+                      _c(
+                        'div',
+                        {
+                          staticClass:
+                            'smooth-scrolling overflow-x-hidden overflow-y-auto',
+                        },
+                        [
+                          _c(
+                            'transition',
+                            { attrs: { name: 'v-tailwind-picker-body' } },
+                            [
+                              !_vm.enableMonth && !_vm.enableYear
+                                ? _c('div', { staticClass: 'relative' }, [
+                                    _c(
+                                      'div',
+                                      {
+                                        staticClass:
+                                          'flex flex-no-wrap py-2 border-b',
+                                        class: 'border-' + _vm.className.hover,
+                                      },
+                                      _vm._l(_vm.days, function (day, i) {
+                                        return _c(
+                                          'div',
+                                          {
+                                            key: day,
+                                            staticClass:
+                                              'w-1/7 flex justify-center',
+                                          },
+                                          [
+                                            _c(
+                                              'div',
+                                              {
+                                                staticClass:
+                                                  'leading-relaxed text-sm',
+                                                class: [
+                                                  i === 0
+                                                    ? 'text-' +
+                                                      _vm.className.color
+                                                        .holiday
+                                                    : i === 5
+                                                    ? 'text-' +
+                                                      _vm.className.color
+                                                        .weekend
+                                                    : '',
+                                                ],
+                                              },
+                                              [
+                                                _vm._v(
+                                                  '\n                      ' +
+                                                    _vm._s(day) +
+                                                    '\n                    ',
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        )
+                                      }),
+                                      0,
+                                    ),
+                                    _vm._v(' '),
+                                    _c(
+                                      'div',
+                                      {
+                                        ref: 'currentPicker',
+                                        staticClass: 'flex flex-wrap relative',
+                                      },
+                                      [
+                                        _vm._l(_vm.previousPicker, function (
+                                          date,
+                                          i,
+                                        ) {
+                                          return _c(
+                                            'div',
+                                            {
+                                              key:
+                                                '' +
+                                                date.$D +
+                                                date.$M +
+                                                date.$y +
+                                                '-previous',
+                                              staticClass:
+                                                'w-1/7 flex justify-center my-2px cursor-not-allowed',
+                                              class: [
+                                                i ===
+                                                _vm.previousPicker.length - 1
+                                                  ? 'rounded-r-full'
+                                                  : '',
+                                                'bg-' + _vm.className.base,
+                                              ],
+                                            },
+                                            [
+                                              _c(
                                                 'div',
                                                 {
-                                                  key:
-                                                    '' +
-                                                    date.$D +
-                                                    date.$M +
-                                                    date.$y +
-                                                    '-current',
                                                   staticClass:
-                                                    'w-1/7 group flex justify-center items-center my-2px',
+                                                    'h-8 w-8 flex justify-center items-center',
+                                                  attrs: {
+                                                    'data-tailwind-datepicker':
+                                                      date.$d,
+                                                  },
                                                 },
                                                 [
                                                   _c(
                                                     'div',
                                                     {
                                                       staticClass:
-                                                        'relative rounded-full overflow-hidden',
+                                                        'text-xs opacity-75',
+                                                      class: [
+                                                        date.day() === 0
+                                                          ? 'text-' +
+                                                            _vm.className.color
+                                                              .holiday
+                                                          : date.day() === 5
+                                                          ? 'text-' +
+                                                            _vm.className.color
+                                                              .weekend
+                                                          : '',
+                                                      ],
                                                     },
                                                     [
-                                                      date.$events
+                                                      _vm._v(
+                                                        '\n                        ' +
+                                                          _vm._s(date.$D) +
+                                                          '\n                      ',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          )
+                                        }),
+                                        _vm._v(' '),
+                                        _vm._l(_vm.currentPicker, function (
+                                          date,
+                                        ) {
+                                          return _c(
+                                            'div',
+                                            {
+                                              key:
+                                                '' +
+                                                date.$D +
+                                                date.$M +
+                                                date.$y +
+                                                '-current',
+                                              staticClass:
+                                                'w-1/7 group flex justify-center items-center my-2px',
+                                            },
+                                            [
+                                              _c(
+                                                'div',
+                                                {
+                                                  staticClass:
+                                                    'relative rounded-full overflow-hidden',
+                                                },
+                                                [
+                                                  date.$events
+                                                    ? _c('div', {
+                                                        staticClass:
+                                                          'absolute top-0 right-0 h-2 w-2 z-2',
+                                                        class:
+                                                          'bg-' +
+                                                          _vm.className.color
+                                                            .event,
+                                                        style: {
+                                                          backgroundColor: date
+                                                            .$events.color
+                                                            ? date.$events.color
+                                                            : '',
+                                                        },
+                                                      })
+                                                    : _vm._e(),
+                                                  _vm._v(' '),
+                                                  _c(
+                                                    'div',
+                                                    {
+                                                      staticClass:
+                                                        'relative h-8 w-8 flex justify-center items-center rounded-full overflow-hidden',
+                                                      class: [
+                                                        _vm.possibleDate(date)
+                                                          ? 'cursor-pointer'
+                                                          : 'cursor-not-allowed',
+                                                      ],
+                                                    },
+                                                    [
+                                                      _vm.possibleDate(date)
                                                         ? _c('div', {
                                                             staticClass:
-                                                              'absolute top-0 right-0 h-2 w-2 z-2',
-                                                            class:
-                                                              'bg-' +
-                                                              _vm.className
-                                                                .color.event,
-                                                            style: {
-                                                              backgroundColor: date
-                                                                .$events.color
-                                                                ? date.$events
+                                                              'absolute inset-0 rounded-full transition duration-150 ease-in-out border border-dotted border-transparent',
+                                                            class: [
+                                                              _vm.possibleDate(
+                                                                date,
+                                                              )
+                                                                ? 'hover:border-' +
+                                                                  _vm.className
                                                                     .color
+                                                                    .selected
                                                                 : '',
+                                                              date.$D ===
+                                                              _vm.today.$D
+                                                                ? 'bg-' +
+                                                                  _vm.className
+                                                                    .color
+                                                                    .selected +
+                                                                  ' shadow-xs'
+                                                                : '',
+                                                            ],
+                                                            on: {
+                                                              click: function (
+                                                                $event,
+                                                              ) {
+                                                                return _vm.changePicker(
+                                                                  date,
+                                                                )
+                                                              },
                                                             },
                                                           })
                                                         : _vm._e(),
@@ -1107,119 +1142,64 @@
                                                         'div',
                                                         {
                                                           staticClass:
-                                                            'relative h-8 w-8 flex justify-center items-center rounded-full overflow-hidden',
-                                                          class: [
-                                                            _vm.possibleDate(
-                                                              date,
-                                                            )
-                                                              ? 'cursor-pointer'
-                                                              : 'cursor-not-allowed',
-                                                          ],
+                                                            'flex justify-center items-center',
+                                                          attrs: {
+                                                            'data-tailwind-datepicker':
+                                                              date.$d,
+                                                          },
                                                         },
                                                         [
-                                                          _vm.possibleDate(date)
-                                                            ? _c('div', {
-                                                                staticClass:
-                                                                  'absolute inset-0 rounded-full transition duration-150 ease-in-out border border-dotted border-transparent',
-                                                                class: [
-                                                                  _vm.possibleDate(
-                                                                    date,
-                                                                  )
-                                                                    ? 'hover:border-' +
-                                                                      _vm
-                                                                        .className
-                                                                        .color
-                                                                        .selected
-                                                                    : '',
-                                                                  date.$D ===
-                                                                  _vm.today.$D
-                                                                    ? 'bg-' +
-                                                                      _vm
-                                                                        .className
-                                                                        .color
-                                                                        .selected +
-                                                                      ' shadow-xs'
-                                                                    : '',
-                                                                ],
-                                                                on: {
-                                                                  click: function (
-                                                                    $event,
-                                                                  ) {
-                                                                    return _vm.changePicker(
-                                                                      date,
-                                                                    )
-                                                                  },
-                                                                },
-                                                              })
-                                                            : _vm._e(),
-                                                          _vm._v(' '),
                                                           _c(
                                                             'div',
                                                             {
-                                                              staticClass:
-                                                                'flex justify-center items-center',
-                                                              attrs: {
-                                                                'data-tailwind-datepicker':
-                                                                  date.$d,
-                                                              },
+                                                              class: [
+                                                                (_vm.holidayDate(
+                                                                  date,
+                                                                ) ||
+                                                                  date.day() ===
+                                                                    0) &&
+                                                                date.$D !==
+                                                                  _vm.today.$D
+                                                                  ? 'text-' +
+                                                                    _vm
+                                                                      .className
+                                                                      .color
+                                                                      .holiday
+                                                                  : '',
+                                                                date.day() ===
+                                                                  5 &&
+                                                                date.$D !==
+                                                                  _vm.today.$D
+                                                                  ? 'text-' +
+                                                                    _vm
+                                                                      .className
+                                                                      .color
+                                                                      .weekend
+                                                                  : '',
+                                                                {
+                                                                  'z-10 text-white ':
+                                                                    date.$D ===
+                                                                      _vm.today
+                                                                        .$D &&
+                                                                    _vm.possibleDate(
+                                                                      date,
+                                                                    ),
+                                                                },
+                                                                {
+                                                                  'opacity-50': !_vm.possibleDate(
+                                                                    date,
+                                                                  ),
+                                                                },
+                                                              ],
                                                             },
                                                             [
-                                                              _c(
-                                                                'div',
-                                                                {
-                                                                  class: [
-                                                                    (_vm.holidayDate(
-                                                                      date,
-                                                                    ) ||
-                                                                      date.day() ===
-                                                                        0) &&
-                                                                    date.$D !==
-                                                                      _vm.today
-                                                                        .$D
-                                                                      ? 'text-' +
-                                                                        _vm
-                                                                          .className
-                                                                          .color
-                                                                          .holiday
-                                                                      : '',
-                                                                    date.day() ===
-                                                                      5 &&
-                                                                    date.$D !==
-                                                                      _vm.today
-                                                                        .$D
-                                                                      ? 'text-' +
-                                                                        _vm
-                                                                          .className
-                                                                          .color
-                                                                          .weekend
-                                                                      : '',
-                                                                    {
-                                                                      'z-10 text-white ':
-                                                                        date.$D ===
-                                                                          _vm
-                                                                            .today
-                                                                            .$D &&
-                                                                        _vm.possibleDate(
-                                                                          date,
-                                                                        ),
-                                                                    },
-                                                                    {
-                                                                      'opacity-50': !_vm.possibleDate(
-                                                                        date,
-                                                                      ),
-                                                                    },
-                                                                  ],
-                                                                },
-                                                                [
-                                                                  _c('span', [
-                                                                    _vm._v(
-                                                                      _vm._s(
-                                                                        date.$D,
-                                                                      ),
-                                                                    ),
-                                                                  ]),
-                                                                ],
-                                                              ),
+                                                              _c('span', [
+                                                                _vm._v(
+                                                                  _vm._s(
+                                                                    date.$D,
+                                                                  ),
+                                                                ),
+                                                              ]),
                                                             ],
                                                           ),
                                                         ],
@@ -1227,295 +1207,304 @@
                                                     ],
                                                   ),
                                                 ],
-                                              )
-                                            }),
-                                            _vm._v(' '),
-                                            _vm._l(_vm.nextPicker, function (
-                                              date,
-                                            ) {
-                                              return _c(
-                                                'div',
-                                                {
-                                                  key:
-                                                    '' +
-                                                    date.$D +
-                                                    date.$M +
-                                                    date.$y +
-                                                    '-next',
-                                                  staticClass:
-                                                    'w-1/7 flex justify-center my-2px cursor-not-allowed',
-                                                  class: [
-                                                    date.$D === 1
-                                                      ? 'rounded-l-full'
-                                                      : '',
-                                                    'bg-' + _vm.className.base,
-                                                  ],
-                                                },
-                                                [
-                                                  _c(
-                                                    'div',
-                                                    {
-                                                      staticClass:
-                                                        'h-8 w-8 flex justify-center items-center',
-                                                      attrs: {
-                                                        'data-tailwind-datepicker':
-                                                          date.$d,
-                                                      },
-                                                    },
-                                                    [
-                                                      _c(
-                                                        'div',
-                                                        {
-                                                          staticClass:
-                                                            'text-xs opacity-75',
-                                                          class: [
-                                                            date.day() === 0
-                                                              ? 'text-' +
-                                                                _vm.className
-                                                                  .color.holiday
-                                                              : date.day() === 5
-                                                              ? 'text-' +
-                                                                _vm.className
-                                                                  .color.weekend
-                                                              : '',
-                                                          ],
-                                                        },
-                                                        [
-                                                          _vm._v(
-                                                            '\n                          ' +
-                                                              _vm._s(date.$D) +
-                                                              '\n                        ',
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              )
-                                            }),
-                                          ],
-                                          2,
-                                        ),
-                                      ])
-                                    : _vm._e(),
-                                ],
-                              ),
-                              _vm._v(' '),
-                              _c(
-                                'transition',
-                                { attrs: { name: 'v-tailwind-picker-months' } },
-                                [
-                                  _vm.enableMonth
-                                    ? _c(
-                                        'div',
-                                        {
-                                          staticClass:
-                                            'relative flex items-center smooth-scrolling overflow-y-auto overflow-x-hidden',
-                                        },
-                                        [
-                                          _c(
+                                              ),
+                                            ],
+                                          )
+                                        }),
+                                        _vm._v(' '),
+                                        _vm._l(_vm.nextPicker, function (date) {
+                                          return _c(
                                             'div',
                                             {
+                                              key:
+                                                '' +
+                                                date.$D +
+                                                date.$M +
+                                                date.$y +
+                                                '-next',
                                               staticClass:
-                                                'flex flex-wrap py-1',
+                                                'w-1/7 flex justify-center my-2px cursor-not-allowed',
+                                              class: [
+                                                date.$D === 1
+                                                  ? 'rounded-l-full'
+                                                  : '',
+                                                'bg-' + _vm.className.base,
+                                              ],
                                             },
-                                            _vm._l(_vm.months, function (
-                                              month,
-                                              i,
-                                            ) {
-                                              return _c(
+                                            [
+                                              _c(
                                                 'div',
                                                 {
-                                                  key: i,
                                                   staticClass:
-                                                    'w-1/3 flex justify-center items-center px-2',
+                                                    'h-8 w-8 flex justify-center items-center',
+                                                  attrs: {
+                                                    'data-tailwind-datepicker':
+                                                      date.$d,
+                                                  },
                                                 },
                                                 [
                                                   _c(
                                                     'div',
                                                     {
                                                       staticClass:
-                                                        'w-full flex justify-center items-center py-2 my-1 transition duration-150 ease-out rounded border cursor-pointer',
+                                                        'text-xs opacity-75',
                                                       class: [
-                                                        i === _vm.today.$M
-                                                          ? 'border-' +
+                                                        date.day() === 0
+                                                          ? 'text-' +
                                                             _vm.className.color
                                                               .holiday
-                                                          : 'border-' +
-                                                            _vm.className
-                                                              .hover +
-                                                            ' hover:border-' +
+                                                          : date.day() === 5
+                                                          ? 'text-' +
                                                             _vm.className.color
-                                                              .holiday,
+                                                              .weekend
+                                                          : '',
                                                       ],
-                                                      on: {
-                                                        click: function (
-                                                          $event,
-                                                        ) {
-                                                          return _vm.setMonth(i)
-                                                        },
-                                                      },
                                                     },
                                                     [
-                                                      _c(
-                                                        'span',
-                                                        {
-                                                          staticClass:
-                                                            'font-medium',
-                                                        },
-                                                        [_vm._v(_vm._s(month))],
+                                                      _vm._v(
+                                                        '\n                        ' +
+                                                          _vm._s(date.$D) +
+                                                          '\n                      ',
                                                       ),
                                                     ],
                                                   ),
                                                 ],
-                                              )
-                                            }),
-                                            0,
-                                          ),
-                                        ],
-                                      )
-                                    : _vm._e(),
-                                ],
-                              ),
-                              _vm._v(' '),
-                              _c(
-                                'transition',
-                                { attrs: { name: 'v-tailwind-picker-years' } },
-                                [
-                                  _vm.enableYear
-                                    ? _c(
-                                        'div',
-                                        {
-                                          staticClass:
-                                            'relative smooth-scrolling overflow-y-auto overflow-x-hidden',
-                                        },
-                                        [
-                                          _c(
-                                            'div',
-                                            {
-                                              staticClass:
-                                                'flex flex-wrap py-1',
-                                            },
-                                            _vm._l(_vm.years, function (
-                                              year,
-                                              i,
-                                            ) {
-                                              return _c(
-                                                'div',
-                                                {
-                                                  key: i,
-                                                  staticClass:
-                                                    'w-1/3 flex justify-center items-center px-2',
-                                                },
-                                                [
-                                                  _c(
-                                                    'div',
-                                                    {
-                                                      staticClass:
-                                                        'w-full flex justify-center items-center py-2 my-1 transition duration-150 ease-out rounded border cursor-pointer',
-                                                      class: [
-                                                        year === _vm.today.$y
-                                                          ? 'border-' +
-                                                            _vm.className.color
-                                                              .holiday
-                                                          : 'border-' +
-                                                            _vm.className
-                                                              .hover +
-                                                            ' hover:border-' +
-                                                            _vm.className.color
-                                                              .holiday,
-                                                      ],
-                                                      on: {
-                                                        click: function (
-                                                          $event,
-                                                        ) {
-                                                          return _vm.setYear(
-                                                            year,
-                                                          )
-                                                        },
-                                                      },
-                                                    },
-                                                    [
-                                                      _c(
-                                                        'span',
-                                                        {
-                                                          staticClass:
-                                                            'font-medium',
-                                                        },
-                                                        [_vm._v(_vm._s(year))],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              )
-                                            }),
-                                            0,
-                                          ),
-                                        ],
-                                      )
-                                    : _vm._e(),
-                                ],
-                              ),
+                                              ),
+                                            ],
+                                          )
+                                        }),
+                                      ],
+                                      2,
+                                    ),
+                                  ])
+                                : _vm._e(),
                             ],
-                            1,
                           ),
                           _vm._v(' '),
-                          _vm.currentPicker.filter(function (o) {
-                            return o.$events !== undefined
-                          }).length > 0
-                            ? _c(
-                                'div',
-                                { attrs: { id: 'v-tailwind-picker-footer' } },
-                                [
-                                  _c(
-                                    'transition-group',
+                          _c(
+                            'transition',
+                            { attrs: { name: 'v-tailwind-picker-months' } },
+                            [
+                              _vm.enableMonth
+                                ? _c(
+                                    'div',
                                     {
                                       staticClass:
-                                        'flex flex-wrap border-t p-1',
-                                      class: 'border-' + _vm.className.hover,
-                                      attrs: {
-                                        name: 'v-tailwind-picker-footer',
-                                        tag: 'div',
-                                      },
+                                        'relative flex items-center smooth-scrolling overflow-y-auto overflow-x-hidden',
                                     },
-                                    _vm._l(
-                                      _vm.currentPicker.filter(function (o) {
-                                        return o.$events !== undefined
-                                      }),
-                                      function (event, i) {
-                                        return _c(
+                                    [
+                                      _c(
+                                        'div',
+                                        { staticClass: 'flex flex-wrap py-1' },
+                                        _vm._l(_vm.months, function (month, i) {
+                                          return _c(
+                                            'div',
+                                            {
+                                              key: i,
+                                              staticClass:
+                                                'w-1/3 flex justify-center items-center px-2',
+                                            },
+                                            [
+                                              _c(
+                                                'div',
+                                                {
+                                                  staticClass:
+                                                    'w-full flex justify-center items-center py-2 my-1 transition duration-150 ease-out rounded border cursor-pointer',
+                                                  class: [
+                                                    i === _vm.today.$M
+                                                      ? 'border-' +
+                                                        _vm.className.color
+                                                          .holiday
+                                                      : 'border-' +
+                                                        _vm.className.hover +
+                                                        ' hover:border-' +
+                                                        _vm.className.color
+                                                          .holiday,
+                                                  ],
+                                                  on: {
+                                                    click: function ($event) {
+                                                      return _vm.setMonth(i)
+                                                    },
+                                                  },
+                                                },
+                                                [
+                                                  _c(
+                                                    'span',
+                                                    {
+                                                      staticClass:
+                                                        'font-medium',
+                                                    },
+                                                    [_vm._v(_vm._s(month))],
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          )
+                                        }),
+                                        0,
+                                      ),
+                                    ],
+                                  )
+                                : _vm._e(),
+                            ],
+                          ),
+                          _vm._v(' '),
+                          _c(
+                            'transition',
+                            { attrs: { name: 'v-tailwind-picker-years' } },
+                            [
+                              _vm.enableYear
+                                ? _c(
+                                    'div',
+                                    {
+                                      staticClass:
+                                        'relative smooth-scrolling overflow-y-auto overflow-x-hidden',
+                                    },
+                                    [
+                                      _c(
+                                        'div',
+                                        { staticClass: 'flex flex-wrap py-1' },
+                                        _vm._l(_vm.years, function (year, i) {
+                                          return _c(
+                                            'div',
+                                            {
+                                              key: i,
+                                              staticClass:
+                                                'w-1/3 flex justify-center items-center px-2',
+                                            },
+                                            [
+                                              _c(
+                                                'div',
+                                                {
+                                                  staticClass:
+                                                    'w-full flex justify-center items-center py-2 my-1 transition duration-150 ease-out rounded border cursor-pointer',
+                                                  class: [
+                                                    year === _vm.today.$y
+                                                      ? 'border-' +
+                                                        _vm.className.color
+                                                          .holiday
+                                                      : 'border-' +
+                                                        _vm.className.hover +
+                                                        ' hover:border-' +
+                                                        _vm.className.color
+                                                          .holiday,
+                                                  ],
+                                                  on: {
+                                                    click: function ($event) {
+                                                      return _vm.setYear(year)
+                                                    },
+                                                  },
+                                                },
+                                                [
+                                                  _c(
+                                                    'span',
+                                                    {
+                                                      staticClass:
+                                                        'font-medium',
+                                                    },
+                                                    [_vm._v(_vm._s(year))],
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          )
+                                        }),
+                                        0,
+                                      ),
+                                    ],
+                                  )
+                                : _vm._e(),
+                            ],
+                          ),
+                        ],
+                        1,
+                      ),
+                      _vm._v(' '),
+                      _vm.currentPicker.filter(function (o) {
+                        return o.$events !== undefined
+                      }).length > 0
+                        ? _c(
+                            'div',
+                            { attrs: { id: 'v-tailwind-picker-footer' } },
+                            [
+                              _c(
+                                'transition-group',
+                                {
+                                  staticClass: 'flex flex-wrap border-t p-1',
+                                  class: 'border-' + _vm.className.hover,
+                                  attrs: {
+                                    name: 'v-tailwind-picker-footer',
+                                    tag: 'div',
+                                  },
+                                },
+                                _vm._l(
+                                  _vm.currentPicker.filter(function (o) {
+                                    return o.$events !== undefined
+                                  }),
+                                  function (event, i) {
+                                    return _c(
+                                      'div',
+                                      {
+                                        key: i + '-event',
+                                        staticClass:
+                                          'w-full flex flex-row space-x-1 mb-px',
+                                      },
+                                      [
+                                        _c(
                                           'div',
                                           {
-                                            key: i + '-event',
                                             staticClass:
-                                              'w-full flex flex-row space-x-1 mb-px',
+                                              'inline-flex justify-end w-4',
                                           },
+                                          [
+                                            _c(
+                                              'span',
+                                              {
+                                                staticClass:
+                                                  'text-xs leading-none',
+                                                class:
+                                                  'text-' +
+                                                  _vm.className.color.holiday,
+                                              },
+                                              [
+                                                _vm._v(
+                                                  '\n                    ' +
+                                                    _vm._s(
+                                                      _vm.dayjs(
+                                                        event.$events.date,
+                                                        _vm.formatDate,
+                                                      ).$D,
+                                                    ) +
+                                                    '\n                  ',
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        _vm._v(' '),
+                                        _c(
+                                          'div',
+                                          { staticClass: 'flex flex-wrap' },
                                           [
                                             _c(
                                               'div',
                                               {
                                                 staticClass:
-                                                  'inline-flex justify-end w-4',
+                                                  'w-full flex items-end',
                                               },
                                               [
                                                 _c(
                                                   'span',
                                                   {
                                                     staticClass:
-                                                      'text-xs leading-none',
-                                                    class:
-                                                      'text-' +
-                                                      _vm.className.color
-                                                        .holiday,
+                                                      'text-xxs leading-none',
                                                   },
                                                   [
                                                     _vm._v(
                                                       '\n                      ' +
                                                         _vm._s(
-                                                          _vm.dayjs(
-                                                            event.$events.date,
-                                                            _vm.formatDate,
-                                                          ).$D,
+                                                          event.$events
+                                                            .description,
                                                         ) +
                                                         '\n                    ',
                                                     ),
@@ -1523,60 +1512,27 @@
                                                 ),
                                               ],
                                             ),
-                                            _vm._v(' '),
-                                            _c(
-                                              'div',
-                                              { staticClass: 'flex flex-wrap' },
-                                              [
-                                                _c(
-                                                  'div',
-                                                  {
-                                                    staticClass:
-                                                      'w-full flex items-end',
-                                                  },
-                                                  [
-                                                    _c(
-                                                      'span',
-                                                      {
-                                                        staticClass:
-                                                          'text-xxs leading-none',
-                                                      },
-                                                      [
-                                                        _vm._v(
-                                                          '\n                        ' +
-                                                            _vm._s(
-                                                              event.$events
-                                                                .description,
-                                                            ) +
-                                                            '\n                      ',
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
                                           ],
-                                        )
-                                      },
-                                    ),
-                                    0,
-                                  ),
-                                ],
-                                1,
-                              )
-                            : _vm._e(),
-                        ],
-                      ),
+                                        ),
+                                      ],
+                                    )
+                                  },
+                                ),
+                                0,
+                              ),
+                            ],
+                            1,
+                          )
+                        : _vm._e(),
                     ],
                   ),
                 ],
               ),
-            ]),
-          ],
-          2,
-        ),
+            ],
+          ),
+        ]),
       ],
+      2,
     )
   }
   var __vue_staticRenderFns__ = []
@@ -1587,9 +1543,9 @@
     if (!inject) {
       return
     }
-    inject('data-v-66058d26_0', {
+    inject('data-v-9184ac06_0', {
       source:
-        "\n#v-tailwind-picker[data-v-66058d26] {\n  top: 95%;\n}\n#v-tailwind-picker .w-1\\/7[data-v-66058d26] {\n  width: 14.285714%;\n}\n#v-tailwind-picker .w-88[data-v-66058d26] {\n  width: 22rem;\n}\n#v-tailwind-picker .text-xxs[data-v-66058d26] {\n  font-size: 0.6rem;\n}\n#v-tailwind-picker[data-v-66058d26]:not(.inline-mode)::before {\n  content: '';\n  width: 14px;\n  height: 14px;\n  z-index: 10;\n  top: -7px;\n  left: 12px;\n  border-radius: 2px;\n  border-color: currentColor;\n  position: absolute;\n  display: block;\n  background-color: #fff;\n  border-left-width: 1px;\n  border-top-width: 1px;\n  transform: rotate(45deg);\n}\n#v-tailwind-picker .smooth-scrolling[data-v-66058d26] {\n  height: 255px;\n  max-height: 255px;\n}\n#v-tailwind-picker .smooth-scrolling[data-v-66058d26]::-webkit-scrollbar {\n  width: 4px;\n}\n#v-tailwind-picker .smooth-scrolling[data-v-66058d26] ::-webkit-scrollbar-thumb {\n  border-radius: 8px;\n  background-color: rgba(0, 0, 0, 0.1);\n}\n.v-tailwind-picker-enter-active[data-v-66058d26],\n.v-tailwind-picker-leave-active[data-v-66058d26] {\n  transition: all 0.1s;\n}\n.v-tailwind-picker-enter[data-v-66058d26],\n.v-tailwind-picker-leave-to[data-v-66058d26] {\n  opacity: 0;\n  transform: translateY(15px);\n}\n.v-tailwind-picker-body-enter-active[data-v-66058d26],\n.v-tailwind-picker-body-leave-active[data-v-66058d26] {\n  transition: all 0.2s;\n}\n.v-tailwind-picker-body-enter[data-v-66058d26],\n.v-tailwind-picker-body-leave-to[data-v-66058d26] {\n  opacity: 0;\n  transform: translateY(-15px);\n}\n.v-tailwind-picker-months-enter-active[data-v-66058d26],\n.v-tailwind-picker-months-leave-active[data-v-66058d26] {\n  transition: all 0.2s;\n}\n.v-tailwind-picker-months-enter[data-v-66058d26],\n.v-tailwind-picker-months-leave-to[data-v-66058d26] {\n  opacity: 0;\n  transform: translateY(-15px);\n}\n.v-tailwind-picker-years-enter-active[data-v-66058d26],\n.v-tailwind-picker-years-leave-active[data-v-66058d26] {\n  transition: all 0.2s;\n}\n.v-tailwind-picker-years-enter[data-v-66058d26],\n.v-tailwind-picker-years-leave-to[data-v-66058d26] {\n  opacity: 0;\n  transform: translateY(-15px);\n}\n.v-tailwind-picker-footer-enter-active[data-v-66058d26],\n.v-tailwind-picker-footer-leave-active[data-v-66058d26] {\n  transition: all 0.2s;\n}\n.v-tailwind-picker-footer-enter[data-v-66058d26],\n.v-tailwind-picker-footer-leave-to[data-v-66058d26] {\n  opacity: 0;\n  transform: translateY(-15px);\n}\n",
+        "\n#v-tailwind-picker[data-v-9184ac06] {\n  top: 95%;\n}\n#v-tailwind-picker .w-1\\/7[data-v-9184ac06] {\n  width: 14.285714%;\n}\n#v-tailwind-picker .w-88[data-v-9184ac06] {\n  width: 22rem;\n}\n#v-tailwind-picker .text-xxs[data-v-9184ac06] {\n  font-size: 0.6rem;\n}\n#v-tailwind-picker[data-v-9184ac06]:not(.inline-mode)::before {\n  content: '';\n  width: 14px;\n  height: 14px;\n  z-index: 10;\n  top: -7px;\n  left: 12px;\n  border-radius: 2px;\n  border-color: currentColor;\n  position: absolute;\n  display: block;\n  background-color: #fff;\n  border-left-width: 1px;\n  border-top-width: 1px;\n  transform: rotate(45deg);\n}\n#v-tailwind-picker .smooth-scrolling[data-v-9184ac06] {\n  height: 255px;\n  max-height: 255px;\n}\n#v-tailwind-picker .smooth-scrolling[data-v-9184ac06]::-webkit-scrollbar {\n  width: 4px;\n}\n#v-tailwind-picker .smooth-scrolling[data-v-9184ac06] ::-webkit-scrollbar-thumb {\n  border-radius: 8px;\n  background-color: rgba(0, 0, 0, 0.1);\n}\n.v-tailwind-picker-enter-active[data-v-9184ac06],\n.v-tailwind-picker-leave-active[data-v-9184ac06] {\n  transition: all 0.1s;\n}\n.v-tailwind-picker-enter[data-v-9184ac06],\n.v-tailwind-picker-leave-to[data-v-9184ac06] {\n  opacity: 0;\n  transform: translateY(15px);\n}\n.v-tailwind-picker-body-enter-active[data-v-9184ac06],\n.v-tailwind-picker-body-leave-active[data-v-9184ac06] {\n  transition: all 0.2s;\n}\n.v-tailwind-picker-body-enter[data-v-9184ac06],\n.v-tailwind-picker-body-leave-to[data-v-9184ac06] {\n  opacity: 0;\n  transform: translateY(-15px);\n}\n.v-tailwind-picker-months-enter-active[data-v-9184ac06],\n.v-tailwind-picker-months-leave-active[data-v-9184ac06] {\n  transition: all 0.2s;\n}\n.v-tailwind-picker-months-enter[data-v-9184ac06],\n.v-tailwind-picker-months-leave-to[data-v-9184ac06] {\n  opacity: 0;\n  transform: translateY(-15px);\n}\n.v-tailwind-picker-years-enter-active[data-v-9184ac06],\n.v-tailwind-picker-years-leave-active[data-v-9184ac06] {\n  transition: all 0.2s;\n}\n.v-tailwind-picker-years-enter[data-v-9184ac06],\n.v-tailwind-picker-years-leave-to[data-v-9184ac06] {\n  opacity: 0;\n  transform: translateY(-15px);\n}\n.v-tailwind-picker-footer-enter-active[data-v-9184ac06],\n.v-tailwind-picker-footer-leave-active[data-v-9184ac06] {\n  transition: all 0.2s;\n}\n.v-tailwind-picker-footer-enter[data-v-9184ac06],\n.v-tailwind-picker-footer-leave-to[data-v-9184ac06] {\n  opacity: 0;\n  transform: translateY(-15px);\n}\n",
       map: {
         version: 3,
         sources: [
@@ -1597,17 +1553,17 @@
         ],
         names: [],
         mappings:
-          ';AAwtBA;EACA,QAAA;AACA;AAEA;EACA,iBAAA;AACA;AAEA;EACA,YAAA;AACA;AAEA;EACA,iBAAA;AACA;AAEA;EACA,WAAA;EACA,WAAA;EACA,YAAA;EACA,WAAA;EACA,SAAA;EACA,UAAA;EACA,kBAAA;EACA,0BAAA;EACA,kBAAA;EACA,cAAA;EACA,sBAAA;EACA,sBAAA;EACA,qBAAA;EACA,wBAAA;AACA;AAEA;EACA,aAAA;EACA,iBAAA;AACA;AAEA;EACA,UAAA;AACA;AAEA;EACA,kBAAA;EACA,oCAAA;AACA;AAEA;;EAEA,oBAAA;AACA;AAEA;;EAEA,UAAA;EACA,2BAAA;AACA;AAEA;;EAEA,oBAAA;AACA;AAEA;;EAEA,UAAA;EACA,4BAAA;AACA;AAEA;;EAEA,oBAAA;AACA;AAEA;;EAEA,UAAA;EACA,4BAAA;AACA;AAEA;;EAEA,oBAAA;AACA;AAEA;;EAEA,UAAA;EACA,4BAAA;AACA;AAEA;;EAEA,oBAAA;AACA;AAEA;;EAEA,UAAA;EACA,4BAAA;AACA',
+          ';AAguBA;EACA,QAAA;AACA;AAEA;EACA,iBAAA;AACA;AAEA;EACA,YAAA;AACA;AAEA;EACA,iBAAA;AACA;AAEA;EACA,WAAA;EACA,WAAA;EACA,YAAA;EACA,WAAA;EACA,SAAA;EACA,UAAA;EACA,kBAAA;EACA,0BAAA;EACA,kBAAA;EACA,cAAA;EACA,sBAAA;EACA,sBAAA;EACA,qBAAA;EACA,wBAAA;AACA;AAEA;EACA,aAAA;EACA,iBAAA;AACA;AAEA;EACA,UAAA;AACA;AAEA;EACA,kBAAA;EACA,oCAAA;AACA;AAEA;;EAEA,oBAAA;AACA;AAEA;;EAEA,UAAA;EACA,2BAAA;AACA;AAEA;;EAEA,oBAAA;AACA;AAEA;;EAEA,UAAA;EACA,4BAAA;AACA;AAEA;;EAEA,oBAAA;AACA;AAEA;;EAEA,UAAA;EACA,4BAAA;AACA;AAEA;;EAEA,oBAAA;AACA;AAEA;;EAEA,UAAA;EACA,4BAAA;AACA;AAEA;;EAEA,oBAAA;AACA;AAEA;;EAEA,UAAA;EACA,4BAAA;AACA',
         file: 'vue-tailwind-picker.vue',
         sourcesContent: [
-          '<template>\n  <div ref="vTailwindPickerRef" class="relative w-full">\n    <div\n      v-closable="{\n        handler: \'onAway\',\n      }"\n      @click="onFeedBack"\n    >\n      <slot></slot>\n      <transition name="v-tailwind-picker">\n        <div v-show="showPicker || inline">\n          <div\n            id="v-tailwind-picker"\n            class="bg-transparent mt-3 z-10"\n            :class="[\n              { \'inline-mode\': inline },\n              inline ? \'static\' : \'absolute bottom-0 inset-x-0\',\n              `text-${className.hover}`,\n            ]"\n          >\n            <div\n              class="w-88 h-auto max-w-xs transition-all duration-150 ease-linear bg-white rounded overflow-hidden border"\n              :class="[\n                `border-${className.hover}`,\n                `text-${className.color.default}`,\n                inline ? \'shadow-xs\' : \'shadow-md\',\n              ]"\n            >\n              <div id="v-tailwind-picker-header">\n                <div\n                  class="flex flex-row justify-center items-center px-2 py-1"\n                >\n                  <div class="flex items-center text-2xl xl:text-3xl">\n                    {{ today.format(\'DD\') }}\n                  </div>\n                  <div class="mx-1">\n                    <div class="leading-none text-xxs">\n                      {{ today.format(\'dddd\') }}\n                    </div>\n                    <div class="leading-none text-xs">\n                      {{ today.format(\'MMMM YYYY\') }}\n                    </div>\n                  </div>\n                </div>\n              </div>\n              <div class="relative p-1">\n                <div\n                  class="absolute inset-0"\n                  :class="`bg-${className.base}`"\n                ></div>\n                <div class="flex justify-between items-center relative">\n                  <div class="flex-shrink-0 w-8">\n                    <transition name="v-tailwind-picker-chevron-left">\n                      <div\n                        v-if="!enableMonth && !enableYear"\n                        class="rounded-full overflow-hidden"\n                      >\n                        <div\n                          class="transition duration-150 ease-out p-2"\n                          :class="[\n                            visiblePrev\n                              ? \'cursor-pointer\'\n                              : \'cursor-not-allowed opacity-30\',\n                            `hover:bg-${className.hover}`,\n                          ]"\n                          @click="onPrevious()"\n                        >\n                          <svg\n                            class="h-4 w-auto"\n                            xmlns="http://www.w3.org/2000/svg"\n                            viewBox="0 0 511.641 511.641"\n                            fill="currentColor"\n                          >\n                            <path\n                              d="M148.32 255.76L386.08 18c4.053-4.267 3.947-10.987-.213-15.04a10.763 10.763 0 00-14.827 0L125.707 248.293a10.623 10.623 0 000 15.04L371.04 508.667c4.267 4.053 10.987 3.947 15.04-.213a10.763 10.763 0 000-14.827L148.32 255.76z"\n                            />\n                          </svg>\n                        </div>\n                      </div>\n                    </transition>\n                  </div>\n                  <div class="flex flex-1">\n                    <div\n                      class="flex-1 rounded overflow-hidden py-1 ml-2 mr-1 text-center cursor-pointer transition duration-150 ease-out"\n                      :class="[\n                        enableMonth ? `bg-${className.hover}` : \'\',\n                        `hover:bg-${className.hover}`,\n                      ]"\n                      @click="toggleMonth()"\n                    >\n                      {{ today.format(\'MMMM\') }}\n                    </div>\n                    <div\n                      class="flex-1 rounded overflow-hidden py-1 mr-2 ml-1 text-center cursor-pointer transition duration-150 ease-out"\n                      :class="[\n                        enableYear ? `bg-${className.hover}` : \'\',\n                        `hover:bg-${className.hover}`,\n                      ]"\n                      @click="toggleYear()"\n                    >\n                      {{ today.$y }}\n                    </div>\n                  </div>\n\n                  <div class="flex-shrink-0 w-8">\n                    <transition name="v-tailwind-picker-chevron-right">\n                      <div\n                        v-if="!enableMonth && !enableYear"\n                        class="rounded-full overflow-hidden"\n                      >\n                        <div\n                          class="transition duration-150 ease-out p-2"\n                          :class="[\n                            visibleNext\n                              ? \'cursor-pointer\'\n                              : \'cursor-not-allowed opacity-30\',\n                            `hover:bg-${className.hover}`,\n                          ]"\n                          @click="onNext()"\n                        >\n                          <svg\n                            class="h-4 w-auto"\n                            xmlns="http://www.w3.org/2000/svg"\n                            viewBox="0 0 511.949 511.949"\n                            fill="currentColor"\n                          >\n                            <path\n                              d="M386.235 248.308L140.902 2.975c-4.267-4.053-10.987-3.947-15.04.213a10.763 10.763 0 000 14.827l237.76 237.76-237.76 237.867c-4.267 4.053-4.373 10.88-.213 15.04 4.053 4.267 10.88 4.373 15.04.213l.213-.213 245.333-245.333a10.624 10.624 0 000-15.041z"\n                            />\n                          </svg>\n                        </div>\n                      </div>\n                    </transition>\n                  </div>\n                </div>\n              </div>\n              <div class="smooth-scrolling overflow-x-hidden overflow-y-auto">\n                <transition name="v-tailwind-picker-body">\n                  <div v-if="!enableMonth && !enableYear" class="relative">\n                    <div\n                      class="flex flex-no-wrap py-2 border-b"\n                      :class="`border-${className.hover}`"\n                    >\n                      <div\n                        v-for="(day, i) in days"\n                        :key="day"\n                        class="w-1/7 flex justify-center"\n                      >\n                        <div\n                          class="leading-relaxed text-sm"\n                          :class="[\n                            i === 0\n                              ? `text-${className.color.holiday}`\n                              : i === 5\n                              ? `text-${className.color.weekend}`\n                              : \'\',\n                          ]"\n                        >\n                          {{ day }}\n                        </div>\n                      </div>\n                    </div>\n\n                    <div class="flex flex-wrap relative">\n                      <div\n                        v-for="(date, i) in previousPicker"\n                        :key="`${date.$D}${date.$M}${date.$y}-previous`"\n                        class="w-1/7 flex justify-center my-2px cursor-not-allowed"\n                        :class="[\n                          i === previousPicker.length - 1\n                            ? \'rounded-r-full\'\n                            : \'\',\n                          `bg-${className.base}`,\n                        ]"\n                      >\n                        <div\n                          class="h-8 w-8 flex justify-center items-center"\n                          :data-tailwind-datepicker="date.$d"\n                        >\n                          <div\n                            class="text-xs opacity-75"\n                            :class="[\n                              date.day() === 0\n                                ? `text-${className.color.holiday}`\n                                : date.day() === 5\n                                ? `text-${className.color.weekend}`\n                                : \'\',\n                            ]"\n                          >\n                            {{ date.$D }}\n                          </div>\n                        </div>\n                      </div>\n\n                      <div\n                        v-for="date in currentPicker"\n                        :key="`${date.$D}${date.$M}${date.$y}-current`"\n                        class="w-1/7 group flex justify-center items-center my-2px"\n                      >\n                        <div class="relative rounded-full overflow-hidden">\n                          <div\n                            v-if="date.$events"\n                            class="absolute top-0 right-0 h-2 w-2 z-2"\n                            :class="`bg-${className.color.event}`"\n                            :style="{\n                              backgroundColor: date.$events.color\n                                ? date.$events.color\n                                : \'\',\n                            }"\n                          ></div>\n                          <div\n                            class="relative h-8 w-8 flex justify-center items-center rounded-full overflow-hidden"\n                            :class="[\n                              possibleDate(date)\n                                ? \'cursor-pointer\'\n                                : \'cursor-not-allowed\',\n                            ]"\n                          >\n                            <div\n                              v-if="possibleDate(date)"\n                              class="absolute inset-0 rounded-full transition duration-150 ease-in-out border border-dotted border-transparent"\n                              :class="[\n                                possibleDate(date)\n                                  ? `hover:border-${className.color.selected}`\n                                  : \'\',\n                                date.$D === today.$D\n                                  ? `bg-${className.color.selected} shadow-xs`\n                                  : \'\',\n                              ]"\n                              @click="changePicker(date)"\n                            ></div>\n                            <div\n                              class="flex justify-center items-center"\n                              :data-tailwind-datepicker="date.$d"\n                            >\n                              <div\n                                :class="[\n                                  (holidayDate(date) || date.day() === 0) &&\n                                  date.$D !== today.$D\n                                    ? `text-${className.color.holiday}`\n                                    : \'\',\n                                  date.day() === 5 && date.$D !== today.$D\n                                    ? `text-${className.color.weekend}`\n                                    : \'\',\n                                  {\n                                    \'z-10 text-white \':\n                                      date.$D === today.$D &&\n                                      possibleDate(date),\n                                  },\n                                  {\n                                    \'opacity-50\': !possibleDate(date),\n                                  },\n                                ]"\n                              >\n                                <span>{{ date.$D }}</span>\n                              </div>\n                            </div>\n                          </div>\n                        </div>\n                      </div>\n\n                      <div\n                        v-for="date in nextPicker"\n                        :key="`${date.$D}${date.$M}${date.$y}-next`"\n                        class="w-1/7 flex justify-center my-2px cursor-not-allowed"\n                        :class="[\n                          date.$D === 1 ? \'rounded-l-full\' : \'\',\n                          `bg-${className.base}`,\n                        ]"\n                      >\n                        <div\n                          class="h-8 w-8 flex justify-center items-center"\n                          :data-tailwind-datepicker="date.$d"\n                        >\n                          <div\n                            class="text-xs opacity-75"\n                            :class="[\n                              date.day() === 0\n                                ? `text-${className.color.holiday}`\n                                : date.day() === 5\n                                ? `text-${className.color.weekend}`\n                                : \'\',\n                            ]"\n                          >\n                            {{ date.$D }}\n                          </div>\n                        </div>\n                      </div>\n                    </div>\n                  </div>\n                </transition>\n                <transition name="v-tailwind-picker-months">\n                  <div\n                    v-if="enableMonth"\n                    class="relative flex items-center smooth-scrolling overflow-y-auto overflow-x-hidden"\n                  >\n                    <div class="flex flex-wrap py-1">\n                      <div\n                        v-for="(month, i) in months"\n                        :key="i"\n                        class="w-1/3 flex justify-center items-center px-2"\n                      >\n                        <div\n                          :class="[\n                            i === today.$M\n                              ? `border-${className.color.holiday}`\n                              : `border-${className.hover} hover:border-${className.color.holiday}`,\n                          ]"\n                          class="w-full flex justify-center items-center py-2 my-1 transition duration-150 ease-out rounded border cursor-pointer"\n                          @click="setMonth(i)"\n                        >\n                          <span class="font-medium">{{ month }}</span>\n                        </div>\n                      </div>\n                    </div>\n                  </div>\n                </transition>\n                <transition name="v-tailwind-picker-years">\n                  <div\n                    v-if="enableYear"\n                    class="relative smooth-scrolling overflow-y-auto overflow-x-hidden"\n                  >\n                    <div class="flex flex-wrap py-1">\n                      <div\n                        v-for="(year, i) in years"\n                        :key="i"\n                        class="w-1/3 flex justify-center items-center px-2"\n                      >\n                        <div\n                          :class="[\n                            year === today.$y\n                              ? `border-${className.color.holiday}`\n                              : `border-${className.hover} hover:border-${className.color.holiday}`,\n                          ]"\n                          class="w-full flex justify-center items-center py-2 my-1 transition duration-150 ease-out rounded border cursor-pointer"\n                          @click="setYear(year)"\n                        >\n                          <span class="font-medium">{{ year }}</span>\n                        </div>\n                      </div>\n                    </div>\n                  </div>\n                </transition>\n              </div>\n              <div\n                v-if="\n                  currentPicker.filter((o) => o.$events !== undefined).length >\n                  0\n                "\n                id="v-tailwind-picker-footer"\n              >\n                <transition-group\n                  name="v-tailwind-picker-footer"\n                  tag="div"\n                  class="flex flex-wrap border-t p-1"\n                  :class="`border-${className.hover}`"\n                >\n                  <div\n                    v-for="(event, i) in currentPicker.filter(\n                      (o) => o.$events !== undefined,\n                    )"\n                    :key="`${i}-event`"\n                    class="w-full flex flex-row space-x-1 mb-px"\n                  >\n                    <div class="inline-flex justify-end w-4">\n                      <span\n                        class="text-xs leading-none"\n                        :class="`text-${className.color.holiday}`"\n                      >\n                        {{ dayjs(event.$events.date, formatDate).$D }}\n                      </span>\n                    </div>\n                    <div class="flex flex-wrap">\n                      <div class="w-full flex items-end">\n                        <span class="text-xxs leading-none">\n                          {{ event.$events.description }}\n                        </span>\n                      </div>\n                    </div>\n                  </div>\n                </transition-group>\n              </div>\n            </div>\n          </div>\n        </div>\n      </transition>\n    </div>\n  </div>\n</template>\n\n<script>\nimport dayjs from \'dayjs\'\nimport isToday from \'dayjs/plugin/isToday\'\nimport customParseFormat from \'dayjs/plugin/customParseFormat\'\nimport idBetween from \'dayjs/plugin/isBetween\'\nimport localizedFormat from \'dayjs/plugin/localizedFormat\'\nimport advancedFormat from \'dayjs/plugin/advancedFormat\'\nimport isSameOrBefore from \'dayjs/plugin/isSameOrBefore\'\nimport isSameOrAfter from \'dayjs/plugin/isSameOrAfter\'\n\ndayjs.extend(isToday)\ndayjs.extend(customParseFormat)\ndayjs.extend(idBetween)\ndayjs.extend(localizedFormat)\ndayjs.extend(advancedFormat)\ndayjs.extend(isSameOrBefore)\ndayjs.extend(isSameOrAfter)\n\nlet handleOutsideClick\n\n// import \'./css/tailwind.css\' // Development only\n\nexport default {\n  name: \'VueTailwindPicker\',\n  directives: {\n    closable: {\n      // https://github.com/TahaSh/vue-closable resource\n      bind(el, binding, vnode) {\n        // Here\'s the click/touchstart handler\n        // (it is registered below)\n        handleOutsideClick = (e) => {\n          e.stopPropagation()\n          // Get the handler method name and the exclude array\n          // from the object used in v-closable\n          const { handler, exclude } = binding.value\n\n          // This variable indicates if the clicked element is excluded\n          let clickedOnExcludedEl = false\n          if (exclude) {\n            exclude.forEach((refName) => {\n              // We only run this code if we haven\'t detected\n              // any excluded element yet\n              if (!clickedOnExcludedEl) {\n                // Get the element using the reference name\n                const excludedEl = vnode.context.$refs[refName]\n                // See if this excluded element\n                // is the same element the user just clicked on\n                clickedOnExcludedEl = excludedEl.contains(e.target)\n              }\n            })\n          }\n\n          // We check to see if the clicked element is not\n          // the dialog element and not excluded\n          if (!el.contains(e.target) && !clickedOnExcludedEl) {\n            // If the clicked element is outside the dialog\n            // and not the button, then call the outside-click handler\n            // from the same component this directive is used in\n            vnode.context[handler]()\n          }\n        }\n        // Register click/touchstart event listeners on the whole page\n        document.addEventListener(\'click\', handleOutsideClick)\n        document.addEventListener(\'touchstart\', handleOutsideClick)\n      },\n\n      unbind() {\n        // If the element that has v-closable is removed, then\n        // unbind click/touchstart listeners from the whole page\n        document.removeEventListener(\'click\', handleOutsideClick)\n        document.removeEventListener(\'touchstart\', handleOutsideClick)\n      },\n    },\n  },\n  props: {\n    startDate: {\n      type: String,\n      required: false,\n      default: dayjs().format(\'YYYY-MM-DD\'),\n    },\n    endDate: {\n      type: String,\n      required: false,\n      default: undefined,\n    },\n    // Next future\n    disableDate: {\n      type: Array,\n      required: false,\n      default: () => [],\n    },\n    eventDate: {\n      type: Array,\n      required: false,\n      default: () => [],\n    },\n    formatDate: {\n      type: String,\n      required: false,\n      default: \'YYYY-MM-DD\',\n    },\n    // Confused with this\n    formatDisplay: {\n      type: String,\n      required: false,\n      default: \'YYYY-MM-DD\',\n    },\n    inline: {\n      type: Boolean,\n      required: false,\n      default: false,\n    },\n    // Not make sure with this\n    tailwindPickerValue: {\n      type: String,\n      required: false,\n      default: \'\',\n    },\n    // Next future\n    dateRange: {\n      type: Boolean,\n      required: false,\n      default: false,\n    },\n    className: {\n      type: Object,\n      required: false,\n      default: () => ({\n        base: \'gray-100\',\n        hover: \'gray-200\',\n        color: {\n          default: \'gray-700\',\n          holiday: \'red-400\',\n          weekend: \'green-400\',\n          selected: \'red-500\',\n          event: \'indigo-500\',\n        },\n      }),\n    },\n  },\n  data() {\n    const startDatepicker = dayjs(this.startDate, this.formatDate).add(\n      dayjs().hour() >= 20 ? 1 : 0,\n      \'day\',\n    )\n    const endDatepicker = this.endDate\n      ? dayjs(this.endDate, this.formatDate)\n      : undefined\n    const today = dayjs(startDatepicker, this.formatDate)\n    const months = Array.from(Array(12), (v, i) => {\n      return dayjs().month(i).format(\'MMMM\')\n    })\n    const years = Array.from(\n      Array(\n        this.endDate\n          ? endDatepicker.diff(today, \'year\') + 1\n          : dayjs().diff(today, \'year\') + 36,\n      ),\n      (v, i) => {\n        return dayjs().add(i, \'year\').$y\n      },\n    )\n    const visibleMonth = false\n    const visibleYear = false\n    return {\n      startDatepicker,\n      endDatepicker,\n      today,\n      visibleMonth,\n      months,\n      visibleYear,\n      years,\n      showPicker: false,\n    }\n  },\n  computed: {\n    days() {\n      return Array.from(Array(7), (v, i) => {\n        return dayjs().day(i).format(\'ddd\')\n      })\n    },\n    previousPicker() {\n      const display = []\n      const previous = this.today.date(0)\n      const current = this.today.date(0)\n      for (let i = 0; i <= current.day(); i++) {\n        display.push(previous.subtract(i, \'day\'))\n      }\n      return display.sort((a, b) => a.$d - b.$d)\n    },\n    currentPicker() {\n      const eventDate = this.eventDate.length > 0 ? this.eventDate : []\n      return Array.from(Array(this.today.daysInMonth()), (v, i) => {\n        const events = this.today.date(++i)\n        events.$events = eventDate.find((o) => {\n          return o.date === events.format(this.formatDate)\n        })\n        return events\n      })\n    },\n    nextPicker() {\n      const display = []\n      const previous = this.previousPicker.length\n      const current = this.today.daysInMonth()\n      for (let i = 1; i <= 42 - (previous + current); i++) {\n        display.push(this.today.date(i).add(1, \'month\'))\n      }\n      return display\n    },\n    enableMonth() {\n      return this.visibleMonth\n    },\n    enableYear() {\n      return this.visibleYear\n    },\n    visiblePrev() {\n      if (!this.dateRange) {\n        const endOf = this.today.subtract(1, \'month\').endOf(\'month\')\n        return (\n          this.startDatepicker.diff(endOf, \'day\') <=\n          this.today.daysInMonth() - this.today.$D\n        )\n      }\n      return true\n    },\n    visibleNext() {\n      if (!this.dateRange && this.endDate) {\n        const startOf = this.today.add(1, \'month\').startOf(\'month\')\n        return this.endDatepicker.diff(startOf, \'day\') > 0\n      }\n      return true\n    },\n  },\n  mounted() {\n    this.init()\n  },\n  methods: {\n    dayjs,\n    init() {\n      this.emit()\n    },\n    emit() {\n      this.$emit(\'change\', this.today.format(this.formatDate))\n    },\n    changePicker(date) {\n      this.today = date\n      this.emit()\n      this.showPicker = !this.showPicker\n    },\n    onPrevious() {\n      if (this.visiblePrev) {\n        const today = this.today\n          .set(\'month\', this.today.$M === 0 ? 11 : this.today.$M - 1)\n          .set(\'year\', this.today.$M === 0 ? this.today.$y - 1 : this.today.$y)\n        if (this.possibleDate(today)) {\n          this.today = today\n        } else {\n          this.today = this.startDatepicker\n        }\n        this.emit()\n      }\n    },\n    onNext() {\n      if (this.visibleNext) {\n        const today = this.today\n          .set(\'month\', (this.today.$M + 1) % 12)\n          .set(\'year\', this.today.$M === 11 ? this.today.$y + 1 : this.today.$y)\n        if (this.possibleDate(today)) {\n          this.today = today\n        } else {\n          this.today = this.endDatepicker\n        }\n        this.emit()\n      }\n    },\n    possibleStartDate(date) {\n      return this.dateRange\n        ? true\n        : date.isSameOrAfter(this.startDatepicker, \'day\')\n    },\n    possibleEndDate(date) {\n      if (this.endDate) {\n        return this.dateRange\n          ? true\n          : date.isSameOrBefore(this.endDatepicker, \'day\')\n      }\n      return false\n    },\n    possibleDate(date) {\n      if (this.endDate) {\n        return this.possibleStartDate(date) && this.possibleEndDate(date)\n      }\n      return this.possibleStartDate(date)\n    },\n    holidayDate(date) {\n      return !!(date.$events && date.$events.holiday)\n    },\n    toggleMonth() {\n      this.visibleMonth = !this.visibleMonth\n      if (this.visibleMonth) {\n        this.visibleYear = false\n      }\n    },\n    toggleYear() {\n      this.visibleYear = !this.visibleYear\n      if (this.visibleYear) {\n        this.visibleMonth = false\n      }\n    },\n    setMonth(month) {\n      if (this.possibleDate(this.today.set(\'month\', month))) {\n        this.today = this.today.set(\'month\', month)\n      } else {\n        this.today = this.startDatepicker\n      }\n      this.emit()\n      this.toggleMonth()\n    },\n    setYear(year) {\n      if (this.possibleDate(this.today.set(\'year\', year))) {\n        this.today = this.today.set(\'year\', year)\n      } else {\n        this.today = this.startDatepicker\n      }\n      this.emit()\n      this.toggleYear()\n    },\n    onAway() {\n      this.showPicker = false\n    },\n    onFeedBack() {\n      this.showPicker = true\n    },\n  },\n}\n</script>\n\n<style scoped>\n#v-tailwind-picker {\n  top: 95%;\n}\n\n#v-tailwind-picker .w-1\\/7 {\n  width: 14.285714%;\n}\n\n#v-tailwind-picker .w-88 {\n  width: 22rem;\n}\n\n#v-tailwind-picker .text-xxs {\n  font-size: 0.6rem;\n}\n\n#v-tailwind-picker:not(.inline-mode)::before {\n  content: \'\';\n  width: 14px;\n  height: 14px;\n  z-index: 10;\n  top: -7px;\n  left: 12px;\n  border-radius: 2px;\n  border-color: currentColor;\n  position: absolute;\n  display: block;\n  background-color: #fff;\n  border-left-width: 1px;\n  border-top-width: 1px;\n  transform: rotate(45deg);\n}\n\n#v-tailwind-picker .smooth-scrolling {\n  height: 255px;\n  max-height: 255px;\n}\n\n#v-tailwind-picker .smooth-scrolling::-webkit-scrollbar {\n  width: 4px;\n}\n\n#v-tailwind-picker .smooth-scrolling ::-webkit-scrollbar-thumb {\n  border-radius: 8px;\n  background-color: rgba(0, 0, 0, 0.1);\n}\n\n.v-tailwind-picker-enter-active,\n.v-tailwind-picker-leave-active {\n  transition: all 0.1s;\n}\n\n.v-tailwind-picker-enter,\n.v-tailwind-picker-leave-to {\n  opacity: 0;\n  transform: translateY(15px);\n}\n\n.v-tailwind-picker-body-enter-active,\n.v-tailwind-picker-body-leave-active {\n  transition: all 0.2s;\n}\n\n.v-tailwind-picker-body-enter,\n.v-tailwind-picker-body-leave-to {\n  opacity: 0;\n  transform: translateY(-15px);\n}\n\n.v-tailwind-picker-months-enter-active,\n.v-tailwind-picker-months-leave-active {\n  transition: all 0.2s;\n}\n\n.v-tailwind-picker-months-enter,\n.v-tailwind-picker-months-leave-to {\n  opacity: 0;\n  transform: translateY(-15px);\n}\n\n.v-tailwind-picker-years-enter-active,\n.v-tailwind-picker-years-leave-active {\n  transition: all 0.2s;\n}\n\n.v-tailwind-picker-years-enter,\n.v-tailwind-picker-years-leave-to {\n  opacity: 0;\n  transform: translateY(-15px);\n}\n\n.v-tailwind-picker-footer-enter-active,\n.v-tailwind-picker-footer-leave-active {\n  transition: all 0.2s;\n}\n\n.v-tailwind-picker-footer-enter,\n.v-tailwind-picker-footer-leave-to {\n  opacity: 0;\n  transform: translateY(-15px);\n}\n</style>\n',
+          '<template>\n  <div\n    ref="vTailwindPickerRef"\n    class="relative"\n    v-closable="{\n      handler: \'onAway\',\n      exclude: [\'currentPicker\'],\n    }"\n    @click="onFeedBack"\n  >\n    <slot></slot>\n    <transition name="v-tailwind-picker">\n      <div v-show="showPicker || inline">\n        <div\n          id="v-tailwind-picker"\n          class="bg-transparent mt-3 z-10"\n          :class="[\n            { \'inline-mode\': inline },\n            inline ? \'static\' : \'absolute bottom-0 inset-x-0\',\n            `text-${className.hover}`,\n          ]"\n        >\n          <div\n            class="w-88 h-auto max-w-xs transition-all duration-150 ease-linear bg-white rounded overflow-hidden border"\n            :class="[\n              `border-${className.hover}`,\n              `text-${className.color.default}`,\n              inline ? \'shadow-xs\' : \'shadow-md\',\n            ]"\n          >\n            <!--            Header of picker-->\n            <div id="v-tailwind-picker-header">\n              <div class="flex flex-row justify-center items-center px-2 py-1">\n                <div class="flex items-center text-2xl xl:text-3xl">\n                  {{ today.format(\'DD\') }}\n                </div>\n                <div class="mx-1">\n                  <div class="leading-none text-xxs">\n                    {{ today.format(\'dddd\') }}\n                  </div>\n                  <div class="leading-none text-xs">\n                    {{ today.format(\'MMMM YYYY\') }}\n                  </div>\n                </div>\n              </div>\n            </div>\n            <!--            Day of picker-->\n            <div class="relative p-1">\n              <div\n                class="absolute inset-0"\n                :class="`bg-${className.base}`"\n              ></div>\n              <div class="flex justify-between items-center relative">\n                <div class="flex-shrink-0 w-8">\n                  <transition name="v-tailwind-picker-chevron-left">\n                    <div\n                      v-if="!enableMonth && !enableYear"\n                      class="rounded-full overflow-hidden"\n                    >\n                      <div\n                        class="transition duration-150 ease-out p-2"\n                        :class="[\n                          visiblePrev\n                            ? \'cursor-pointer\'\n                            : \'cursor-not-allowed opacity-30\',\n                          `hover:bg-${className.hover}`,\n                        ]"\n                        @click="onPrevious()"\n                      >\n                        <svg\n                          class="h-4 w-auto"\n                          xmlns="http://www.w3.org/2000/svg"\n                          viewBox="0 0 511.641 511.641"\n                          fill="currentColor"\n                        >\n                          <path\n                            d="M148.32 255.76L386.08 18c4.053-4.267 3.947-10.987-.213-15.04a10.763 10.763 0 00-14.827 0L125.707 248.293a10.623 10.623 0 000 15.04L371.04 508.667c4.267 4.053 10.987 3.947 15.04-.213a10.763 10.763 0 000-14.827L148.32 255.76z"\n                          />\n                        </svg>\n                      </div>\n                    </div>\n                  </transition>\n                </div>\n                <div class="flex flex-1">\n                  <div\n                    class="flex-1 rounded overflow-hidden py-1 ml-2 mr-1 text-center cursor-pointer transition duration-150 ease-out"\n                    :class="[\n                      enableMonth ? `bg-${className.hover}` : \'\',\n                      `hover:bg-${className.hover}`,\n                    ]"\n                    @click="toggleMonth()"\n                  >\n                    {{ today.format(\'MMMM\') }}\n                  </div>\n                  <div\n                    class="flex-1 rounded overflow-hidden py-1 mr-2 ml-1 text-center cursor-pointer transition duration-150 ease-out"\n                    :class="[\n                      enableYear ? `bg-${className.hover}` : \'\',\n                      `hover:bg-${className.hover}`,\n                    ]"\n                    @click="toggleYear()"\n                  >\n                    {{ today.$y }}\n                  </div>\n                </div>\n\n                <div class="flex-shrink-0 w-8">\n                  <transition name="v-tailwind-picker-chevron-right">\n                    <div\n                      v-if="!enableMonth && !enableYear"\n                      class="rounded-full overflow-hidden"\n                    >\n                      <div\n                        class="transition duration-150 ease-out p-2"\n                        :class="[\n                          visibleNext\n                            ? \'cursor-pointer\'\n                            : \'cursor-not-allowed opacity-30\',\n                          `hover:bg-${className.hover}`,\n                        ]"\n                        @click="onNext()"\n                      >\n                        <svg\n                          class="h-4 w-auto"\n                          xmlns="http://www.w3.org/2000/svg"\n                          viewBox="0 0 511.949 511.949"\n                          fill="currentColor"\n                        >\n                          <path\n                            d="M386.235 248.308L140.902 2.975c-4.267-4.053-10.987-3.947-15.04.213a10.763 10.763 0 000 14.827l237.76 237.76-237.76 237.867c-4.267 4.053-4.373 10.88-.213 15.04 4.053 4.267 10.88 4.373 15.04.213l.213-.213 245.333-245.333a10.624 10.624 0 000-15.041z"\n                          />\n                        </svg>\n                      </div>\n                    </div>\n                  </transition>\n                </div>\n              </div>\n            </div>\n            <!--            Body of picker-->\n            <div class="smooth-scrolling overflow-x-hidden overflow-y-auto">\n              <transition name="v-tailwind-picker-body">\n                <div v-if="!enableMonth && !enableYear" class="relative">\n                  <div\n                    class="flex flex-no-wrap py-2 border-b"\n                    :class="`border-${className.hover}`"\n                  >\n                    <div\n                      v-for="(day, i) in days"\n                      :key="day"\n                      class="w-1/7 flex justify-center"\n                    >\n                      <div\n                        class="leading-relaxed text-sm"\n                        :class="[\n                          i === 0\n                            ? `text-${className.color.holiday}`\n                            : i === 5\n                            ? `text-${className.color.weekend}`\n                            : \'\',\n                        ]"\n                      >\n                        {{ day }}\n                      </div>\n                    </div>\n                  </div>\n\n                  <div ref="currentPicker" class="flex flex-wrap relative">\n                    <div\n                      v-for="(date, i) in previousPicker"\n                      :key="`${date.$D}${date.$M}${date.$y}-previous`"\n                      class="w-1/7 flex justify-center my-2px cursor-not-allowed"\n                      :class="[\n                        i === previousPicker.length - 1 ? \'rounded-r-full\' : \'\',\n                        `bg-${className.base}`,\n                      ]"\n                    >\n                      <div\n                        class="h-8 w-8 flex justify-center items-center"\n                        :data-tailwind-datepicker="date.$d"\n                      >\n                        <div\n                          class="text-xs opacity-75"\n                          :class="[\n                            date.day() === 0\n                              ? `text-${className.color.holiday}`\n                              : date.day() === 5\n                              ? `text-${className.color.weekend}`\n                              : \'\',\n                          ]"\n                        >\n                          {{ date.$D }}\n                        </div>\n                      </div>\n                    </div>\n\n                    <div\n                      v-for="date in currentPicker"\n                      :key="`${date.$D}${date.$M}${date.$y}-current`"\n                      class="w-1/7 group flex justify-center items-center my-2px"\n                    >\n                      <div class="relative rounded-full overflow-hidden">\n                        <div\n                          v-if="date.$events"\n                          class="absolute top-0 right-0 h-2 w-2 z-2"\n                          :class="`bg-${className.color.event}`"\n                          :style="{\n                            backgroundColor: date.$events.color\n                              ? date.$events.color\n                              : \'\',\n                          }"\n                        ></div>\n                        <div\n                          class="relative h-8 w-8 flex justify-center items-center rounded-full overflow-hidden"\n                          :class="[\n                            possibleDate(date)\n                              ? \'cursor-pointer\'\n                              : \'cursor-not-allowed\',\n                          ]"\n                        >\n                          <div\n                            v-if="possibleDate(date)"\n                            class="absolute inset-0 rounded-full transition duration-150 ease-in-out border border-dotted border-transparent"\n                            :class="[\n                              possibleDate(date)\n                                ? `hover:border-${className.color.selected}`\n                                : \'\',\n                              date.$D === today.$D\n                                ? `bg-${className.color.selected} shadow-xs`\n                                : \'\',\n                            ]"\n                            @click="changePicker(date)"\n                          ></div>\n                          <div\n                            class="flex justify-center items-center"\n                            :data-tailwind-datepicker="date.$d"\n                          >\n                            <div\n                              :class="[\n                                (holidayDate(date) || date.day() === 0) &&\n                                date.$D !== today.$D\n                                  ? `text-${className.color.holiday}`\n                                  : \'\',\n                                date.day() === 5 && date.$D !== today.$D\n                                  ? `text-${className.color.weekend}`\n                                  : \'\',\n                                {\n                                  \'z-10 text-white \':\n                                    date.$D === today.$D && possibleDate(date),\n                                },\n                                {\n                                  \'opacity-50\': !possibleDate(date),\n                                },\n                              ]"\n                            >\n                              <span>{{ date.$D }}</span>\n                            </div>\n                          </div>\n                        </div>\n                      </div>\n                    </div>\n\n                    <div\n                      v-for="date in nextPicker"\n                      :key="`${date.$D}${date.$M}${date.$y}-next`"\n                      class="w-1/7 flex justify-center my-2px cursor-not-allowed"\n                      :class="[\n                        date.$D === 1 ? \'rounded-l-full\' : \'\',\n                        `bg-${className.base}`,\n                      ]"\n                    >\n                      <div\n                        class="h-8 w-8 flex justify-center items-center"\n                        :data-tailwind-datepicker="date.$d"\n                      >\n                        <div\n                          class="text-xs opacity-75"\n                          :class="[\n                            date.day() === 0\n                              ? `text-${className.color.holiday}`\n                              : date.day() === 5\n                              ? `text-${className.color.weekend}`\n                              : \'\',\n                          ]"\n                        >\n                          {{ date.$D }}\n                        </div>\n                      </div>\n                    </div>\n                  </div>\n                </div>\n              </transition>\n              <transition name="v-tailwind-picker-months">\n                <div\n                  v-if="enableMonth"\n                  class="relative flex items-center smooth-scrolling overflow-y-auto overflow-x-hidden"\n                >\n                  <div class="flex flex-wrap py-1">\n                    <div\n                      v-for="(month, i) in months"\n                      :key="i"\n                      class="w-1/3 flex justify-center items-center px-2"\n                    >\n                      <div\n                        :class="[\n                          i === today.$M\n                            ? `border-${className.color.holiday}`\n                            : `border-${className.hover} hover:border-${className.color.holiday}`,\n                        ]"\n                        class="w-full flex justify-center items-center py-2 my-1 transition duration-150 ease-out rounded border cursor-pointer"\n                        @click="setMonth(i)"\n                      >\n                        <span class="font-medium">{{ month }}</span>\n                      </div>\n                    </div>\n                  </div>\n                </div>\n              </transition>\n              <transition name="v-tailwind-picker-years">\n                <div\n                  v-if="enableYear"\n                  class="relative smooth-scrolling overflow-y-auto overflow-x-hidden"\n                >\n                  <div class="flex flex-wrap py-1">\n                    <div\n                      v-for="(year, i) in years"\n                      :key="i"\n                      class="w-1/3 flex justify-center items-center px-2"\n                    >\n                      <div\n                        :class="[\n                          year === today.$y\n                            ? `border-${className.color.holiday}`\n                            : `border-${className.hover} hover:border-${className.color.holiday}`,\n                        ]"\n                        class="w-full flex justify-center items-center py-2 my-1 transition duration-150 ease-out rounded border cursor-pointer"\n                        @click="setYear(year)"\n                      >\n                        <span class="font-medium">{{ year }}</span>\n                      </div>\n                    </div>\n                  </div>\n                </div>\n              </transition>\n            </div>\n            <!--            Event of picker-->\n            <div\n              v-if="\n                currentPicker.filter((o) => o.$events !== undefined).length > 0\n              "\n              id="v-tailwind-picker-footer"\n            >\n              <transition-group\n                name="v-tailwind-picker-footer"\n                tag="div"\n                class="flex flex-wrap border-t p-1"\n                :class="`border-${className.hover}`"\n              >\n                <div\n                  v-for="(event, i) in currentPicker.filter(\n                    (o) => o.$events !== undefined,\n                  )"\n                  :key="`${i}-event`"\n                  class="w-full flex flex-row space-x-1 mb-px"\n                >\n                  <div class="inline-flex justify-end w-4">\n                    <span\n                      class="text-xs leading-none"\n                      :class="`text-${className.color.holiday}`"\n                    >\n                      {{ dayjs(event.$events.date, formatDate).$D }}\n                    </span>\n                  </div>\n                  <div class="flex flex-wrap">\n                    <div class="w-full flex items-end">\n                      <span class="text-xxs leading-none">\n                        {{ event.$events.description }}\n                      </span>\n                    </div>\n                  </div>\n                </div>\n              </transition-group>\n            </div>\n          </div>\n        </div>\n      </div>\n    </transition>\n  </div>\n</template>\n\n<script>\nimport dayjs from \'dayjs\'\nimport isToday from \'dayjs/plugin/isToday\'\nimport customParseFormat from \'dayjs/plugin/customParseFormat\'\nimport idBetween from \'dayjs/plugin/isBetween\'\nimport localizedFormat from \'dayjs/plugin/localizedFormat\'\nimport advancedFormat from \'dayjs/plugin/advancedFormat\'\nimport isSameOrBefore from \'dayjs/plugin/isSameOrBefore\'\nimport isSameOrAfter from \'dayjs/plugin/isSameOrAfter\'\n\ndayjs.extend(isToday)\ndayjs.extend(customParseFormat)\ndayjs.extend(idBetween)\ndayjs.extend(localizedFormat)\ndayjs.extend(advancedFormat)\ndayjs.extend(isSameOrBefore)\ndayjs.extend(isSameOrAfter)\n\nlet handleOutsideClick\n\n// import \'./css/tailwind.css\' // Development only\n\nexport default {\n  name: \'VueTailwindPicker\',\n  directives: {\n    closable: {\n      // https://github.com/TahaSh/vue-closable resource\n      bind(el, binding, vnode) {\n        // Here\'s the click/touchstart handler\n        // (it is registered below)\n        handleOutsideClick = (e) => {\n          e.stopPropagation()\n          // Get the handler method name and the exclude array\n          // from the object used in v-closable\n          const { handler, exclude } = binding.value\n\n          // This variable indicates if the clicked element is excluded\n          let clickedOnExcludedEl = false\n          if (exclude) {\n            exclude.forEach((refName) => {\n              // We only run this code if we haven\'t detected\n              // any excluded element yet\n              if (!clickedOnExcludedEl) {\n                // Get the element using the reference name\n                const excludedEl = vnode.context.$refs[refName]\n                // See if this excluded element\n                // is the same element the user just clicked on\n                clickedOnExcludedEl = excludedEl\n                  ? excludedEl.contains(e.target)\n                  : false\n              }\n            })\n          }\n\n          // We check to see if the clicked element is not\n          // the dialog element and not excluded\n          if (clickedOnExcludedEl) {\n            vnode.context[handler]()\n          }\n          if (!el.contains(e.target) && !clickedOnExcludedEl) {\n            // If the clicked element is outside the dialog\n            // and not the button, then call the outside-click handler\n            // from the same component this directive is used in\n            vnode.context[handler]()\n          }\n        }\n        // Register click/touchstart event listeners on the whole page\n        document.addEventListener(\'click\', handleOutsideClick)\n        document.addEventListener(\'touchstart\', handleOutsideClick)\n      },\n\n      unbind() {\n        // If the element that has v-closable is removed, then\n        // unbind click/touchstart listeners from the whole page\n        document.removeEventListener(\'click\', handleOutsideClick)\n        document.removeEventListener(\'touchstart\', handleOutsideClick)\n      },\n    },\n  },\n  props: {\n    startDate: {\n      type: String,\n      required: false,\n      default: dayjs().format(\'YYYY-MM-DD\'),\n    },\n    endDate: {\n      type: String,\n      required: false,\n      default: undefined,\n    },\n    // Next future\n    disableDate: {\n      type: Array,\n      required: false,\n      default: () => [],\n    },\n    eventDate: {\n      type: Array,\n      required: false,\n      default: () => [],\n    },\n    formatDate: {\n      type: String,\n      required: false,\n      default: \'YYYY-MM-DD\',\n    },\n    // Confused with this\n    formatDisplay: {\n      type: String,\n      required: false,\n      default: \'YYYY-MM-DD\',\n    },\n    inline: {\n      type: Boolean,\n      required: false,\n      default: false,\n    },\n    // Not make sure with this\n    tailwindPickerValue: {\n      type: String,\n      required: false,\n      default: \'\',\n    },\n    // Next future\n    dateRange: {\n      type: Boolean,\n      required: false,\n      default: false,\n    },\n    // Next future\n    autoClose: {\n      type: Boolean,\n      required: false,\n      default: true,\n    },\n    className: {\n      type: Object,\n      required: false,\n      default: () => ({\n        base: \'gray-100\',\n        hover: \'gray-200\',\n        color: {\n          default: \'gray-700\',\n          holiday: \'red-400\',\n          weekend: \'green-400\',\n          selected: \'red-500\',\n          event: \'indigo-500\',\n        },\n      }),\n    },\n  },\n  data() {\n    const startDatepicker = dayjs(this.startDate, this.formatDate).add(\n      dayjs().hour() >= 20 ? 1 : 0,\n      \'day\',\n    )\n    const endDatepicker = this.endDate\n      ? dayjs(this.endDate, this.formatDate)\n      : undefined\n    const today = dayjs(startDatepicker, this.formatDate)\n    const months = Array.from(Array(12), (v, i) => {\n      return dayjs().month(i).format(\'MMMM\')\n    })\n    const years = Array.from(\n      Array(\n        this.endDate\n          ? endDatepicker.diff(today, \'year\') + 1\n          : dayjs().diff(today, \'year\') + 36,\n      ),\n      (v, i) => {\n        return dayjs().add(i, \'year\').$y\n      },\n    )\n    const visibleMonth = false\n    const visibleYear = false\n    return {\n      startDatepicker,\n      endDatepicker,\n      today,\n      visibleMonth,\n      months,\n      visibleYear,\n      years,\n      showPicker: false,\n    }\n  },\n  computed: {\n    days() {\n      return Array.from(Array(7), (v, i) => {\n        return dayjs().day(i).format(\'ddd\')\n      })\n    },\n    previousPicker() {\n      const display = []\n      const previous = this.today.date(0)\n      const current = this.today.date(0)\n      for (let i = 0; i <= current.day(); i++) {\n        display.push(previous.subtract(i, \'day\'))\n      }\n      return display.sort((a, b) => a.$d - b.$d)\n    },\n    currentPicker() {\n      const eventDate = this.eventDate.length > 0 ? this.eventDate : []\n      return Array.from(Array(this.today.daysInMonth()), (v, i) => {\n        const events = this.today.date(++i)\n        events.$events = eventDate.find((o) => {\n          return o.date === events.format(this.formatDate)\n        })\n        return events\n      })\n    },\n    nextPicker() {\n      const display = []\n      const previous = this.previousPicker.length\n      const current = this.today.daysInMonth()\n      for (let i = 1; i <= 42 - (previous + current); i++) {\n        display.push(this.today.date(i).add(1, \'month\'))\n      }\n      return display\n    },\n    enableMonth() {\n      return this.visibleMonth\n    },\n    enableYear() {\n      return this.visibleYear\n    },\n    visiblePrev() {\n      if (!this.dateRange) {\n        const endOf = this.today.subtract(1, \'month\').endOf(\'month\')\n        const diff = this.startDatepicker.diff(endOf, \'day\')\n        return diff < this.today.daysInMonth() - this.today.$D\n      }\n      return true\n    },\n    visibleNext() {\n      if (!this.dateRange && this.endDate) {\n        const startOf = this.today.add(1, \'month\').startOf(\'month\')\n        return this.endDatepicker.diff(startOf, \'day\') > 0\n      }\n      return true\n    },\n  },\n  mounted() {\n    this.init()\n  },\n  methods: {\n    dayjs,\n    init() {\n      this.emit()\n    },\n    emit() {\n      this.$emit(\'change\', this.today.format(this.formatDate))\n    },\n    changePicker(date) {\n      this.today = date\n      this.emit()\n      this.showPicker = !this.showPicker\n    },\n    onPrevious() {\n      if (this.visiblePrev) {\n        const today = this.today\n          .set(\'month\', this.today.$M === 0 ? 11 : this.today.$M - 1)\n          .set(\'year\', this.today.$M === 0 ? this.today.$y - 1 : this.today.$y)\n        if (this.possibleDate(today)) {\n          this.today = today\n        } else {\n          this.today = this.startDatepicker\n        }\n        this.emit()\n      }\n    },\n    onNext() {\n      if (this.visibleNext) {\n        const today = this.today\n          .set(\'month\', (this.today.$M + 1) % 12)\n          .set(\'year\', this.today.$M === 11 ? this.today.$y + 1 : this.today.$y)\n        if (this.possibleDate(today)) {\n          this.today = today\n        } else {\n          this.today = this.endDatepicker\n        }\n        this.emit()\n      }\n    },\n    possibleStartDate(date) {\n      return this.dateRange\n        ? true\n        : date.isSameOrAfter(this.startDatepicker, \'day\')\n    },\n    possibleEndDate(date) {\n      if (this.endDate) {\n        return this.dateRange\n          ? true\n          : date.isSameOrBefore(this.endDatepicker, \'day\')\n      }\n      return false\n    },\n    possibleDate(date) {\n      if (this.endDate) {\n        return this.possibleStartDate(date) && this.possibleEndDate(date)\n      }\n      return this.possibleStartDate(date)\n    },\n    holidayDate(date) {\n      return !!(date.$events && date.$events.holiday)\n    },\n    toggleMonth() {\n      this.visibleMonth = !this.visibleMonth\n      if (this.visibleMonth) {\n        this.visibleYear = false\n      }\n    },\n    toggleYear() {\n      this.visibleYear = !this.visibleYear\n      if (this.visibleYear) {\n        this.visibleMonth = false\n      }\n    },\n    setMonth(month) {\n      if (this.possibleDate(this.today.set(\'month\', month))) {\n        this.today = this.today.set(\'month\', month)\n      } else {\n        this.today = this.startDatepicker\n      }\n      this.emit()\n      this.toggleMonth()\n    },\n    setYear(year) {\n      if (this.possibleDate(this.today.set(\'year\', year))) {\n        this.today = this.today.set(\'year\', year)\n      } else {\n        this.today = this.startDatepicker\n      }\n      this.emit()\n      this.toggleYear()\n    },\n    onAway() {\n      this.showPicker = false\n    },\n    onFeedBack() {\n      this.showPicker = true\n    },\n  },\n}\n</script>\n\n<style scoped>\n#v-tailwind-picker {\n  top: 95%;\n}\n\n#v-tailwind-picker .w-1\\/7 {\n  width: 14.285714%;\n}\n\n#v-tailwind-picker .w-88 {\n  width: 22rem;\n}\n\n#v-tailwind-picker .text-xxs {\n  font-size: 0.6rem;\n}\n\n#v-tailwind-picker:not(.inline-mode)::before {\n  content: \'\';\n  width: 14px;\n  height: 14px;\n  z-index: 10;\n  top: -7px;\n  left: 12px;\n  border-radius: 2px;\n  border-color: currentColor;\n  position: absolute;\n  display: block;\n  background-color: #fff;\n  border-left-width: 1px;\n  border-top-width: 1px;\n  transform: rotate(45deg);\n}\n\n#v-tailwind-picker .smooth-scrolling {\n  height: 255px;\n  max-height: 255px;\n}\n\n#v-tailwind-picker .smooth-scrolling::-webkit-scrollbar {\n  width: 4px;\n}\n\n#v-tailwind-picker .smooth-scrolling ::-webkit-scrollbar-thumb {\n  border-radius: 8px;\n  background-color: rgba(0, 0, 0, 0.1);\n}\n\n.v-tailwind-picker-enter-active,\n.v-tailwind-picker-leave-active {\n  transition: all 0.1s;\n}\n\n.v-tailwind-picker-enter,\n.v-tailwind-picker-leave-to {\n  opacity: 0;\n  transform: translateY(15px);\n}\n\n.v-tailwind-picker-body-enter-active,\n.v-tailwind-picker-body-leave-active {\n  transition: all 0.2s;\n}\n\n.v-tailwind-picker-body-enter,\n.v-tailwind-picker-body-leave-to {\n  opacity: 0;\n  transform: translateY(-15px);\n}\n\n.v-tailwind-picker-months-enter-active,\n.v-tailwind-picker-months-leave-active {\n  transition: all 0.2s;\n}\n\n.v-tailwind-picker-months-enter,\n.v-tailwind-picker-months-leave-to {\n  opacity: 0;\n  transform: translateY(-15px);\n}\n\n.v-tailwind-picker-years-enter-active,\n.v-tailwind-picker-years-leave-active {\n  transition: all 0.2s;\n}\n\n.v-tailwind-picker-years-enter,\n.v-tailwind-picker-years-leave-to {\n  opacity: 0;\n  transform: translateY(-15px);\n}\n\n.v-tailwind-picker-footer-enter-active,\n.v-tailwind-picker-footer-leave-active {\n  transition: all 0.2s;\n}\n\n.v-tailwind-picker-footer-enter,\n.v-tailwind-picker-footer-leave-to {\n  opacity: 0;\n  transform: translateY(-15px);\n}\n</style>\n',
         ],
       },
       media: undefined,
     })
   }
   /* scoped */
-  var __vue_scope_id__ = 'data-v-66058d26'
+  var __vue_scope_id__ = 'data-v-9184ac06'
   /* module identifier */
   var __vue_module_identifier__ = undefined
   /* functional template */
