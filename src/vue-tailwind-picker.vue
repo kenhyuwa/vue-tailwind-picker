@@ -10,7 +10,10 @@
   >
     <slot></slot>
     <transition name="v-tailwind-picker">
-      <div v-show="showPicker || inline">
+      <div
+        v-show="showPicker || inline"
+        :style="`--bg-tailwind-picker: ${className.backgroundColor}`"
+      >
         <div
           id="v-tailwind-picker"
           class="bg-transparent mt-3 z-10"
@@ -21,12 +24,13 @@
           ]"
         >
           <div
-            class="w-88 h-auto max-w-xs transition-all duration-150 ease-linear bg-white rounded overflow-hidden border"
+            class="w-88 h-auto max-w-xs transition-all duration-150 ease-linear rounded overflow-hidden border"
             :class="[
               `border-${className.hover}`,
               `text-${className.color.default}`,
               inline ? 'shadow-xs' : 'shadow-md',
             ]"
+            :style="{ backgroundColor: `var(--bg-tailwind-picker)` }"
           >
             <!--            Header of picker-->
             <div id="v-tailwind-picker-header">
@@ -303,8 +307,8 @@
                       <div
                         :class="[
                           i === today.$M
-                            ? `border-${className.color.holiday}`
-                            : `border-${className.hover} hover:border-${className.color.holiday}`,
+                            ? `border-${className.color.selected}`
+                            : `border-${className.hover} hover:border-${className.color.selected}`,
                         ]"
                         class="w-full flex justify-center items-center py-2 my-1 transition duration-150 ease-out rounded border cursor-pointer"
                         @click="setMonth(i)"
@@ -329,8 +333,8 @@
                       <div
                         :class="[
                           year === today.$y
-                            ? `border-${className.color.holiday}`
-                            : `border-${className.hover} hover:border-${className.color.holiday}`,
+                            ? `border-${className.color.selected}`
+                            : `border-${className.hover} hover:border-${className.color.selected}`,
                         ]"
                         class="w-full flex justify-center items-center py-2 my-1 transition duration-150 ease-out rounded border cursor-pointer"
                         @click="setYear(year)"
@@ -526,6 +530,7 @@ export default {
       type: Object,
       required: false,
       default: () => ({
+        backgroundColor: '#FFFFFF',
         base: 'gray-100',
         hover: 'gray-200',
         color: {
@@ -761,7 +766,7 @@ export default {
   border-color: currentColor;
   position: absolute;
   display: block;
-  background-color: #fff;
+  background-color: var(--bg-tailwind-picker);
   border-left-width: 1px;
   border-top-width: 1px;
   transform: rotate(45deg);

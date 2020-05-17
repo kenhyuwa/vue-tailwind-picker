@@ -1,8 +1,16 @@
 # Vue Tailwind Picker
 >Datepicker for vue.js of tailwindcss & dayjs
 
+![Example](https://raw.githubusercontent.com/kenhyuwa/vue-tailwind-picker/master/vue-tailwind-picker.gif)
+
+##### Default
 <p align="center">
-  <img width="700px" src="https://raw.githubusercontent.com/kenhyuwa/vue-tailwind-picker/master/vue-tailwind-picker.png?raw=true">
+  <img width="700px" src="https://raw.githubusercontent.com/kenhyuwa/vue-tailwind-picker/master/vue-tailwind-picker-light.png?raw=true">
+</p>
+
+##### Dark
+<p align="center">
+  <img width="700px" src="https://raw.githubusercontent.com/kenhyuwa/vue-tailwind-picker/master/vue-tailwind-picker-dark.png?raw=true">
 </p>
 
 ## Installation
@@ -14,13 +22,13 @@ $ npm install vue-tailwind-picker --save
 #### CDN
 
 ```html
-<script src="https://unpkg.com/vue-tailwind-picker@1.0.1/dist/vue-tailwind-picker.min.js"></script>
+<script src="https://unpkg.com/vue-tailwind-picker@1.0.2/dist/vue-tailwind-picker.min.js"></script>
 ```
 
 If you are using native ES Modules, there is also an ES Modules compatible build:
 ```html
 <script type="module">
-  import VueTailwindPicker from 'https://cdn.jsdelivr.net/npm/vue-tailwind-picker@1.0.1/dist/vue-tailwind-picker.esm.js'
+  import VueTailwindPicker from 'https://cdn.jsdelivr.net/npm/vue-tailwind-picker@1.0.2/dist/vue-tailwind-picker.esm.js'
 </script>
 ```
 
@@ -65,29 +73,8 @@ then add to nuxt.config.js
             end-date="2021-12-31"
             format-date="YYYY-MM-DD"
             :inline="true"
-            :class-name="{
-                base: 'gray-100',
-                hover: 'gray-200',
-                color: {
-                    default: 'gray-700',
-                    holiday: 'red-400',
-                    weekend: 'green-400',
-                    selected: 'red-500',
-                    event: 'indigo-500',
-                },
-            }"
-            :event-date="[
-                {
-                    date: '2020-01-01',
-                    description: 'Happy new year',
-                    holiday: true,
-                },
-                {
-                    date: '2020-02-14',
-                    description: 'Happy valentine day',
-                    holiday: false,
-                },
-            ]"
+            :class-name="classObject"
+            :event-date="events"
             @change="(v) => (picker = v)"
         >
         <input
@@ -104,7 +91,54 @@ then add to nuxt.config.js
 export default {
     data() {
         return {
-            picker: ''
+            picker: '',
+            darkMode: false, // change to dynamic variable, this is just example,
+            events: []
+        }
+    },
+    mounted() {
+        // get event from API 
+        // example response
+        this.events = [
+          {
+              date: '2020-01-01',
+              description: 'Happy new year',
+              holiday: true,
+          },
+          {
+              date: '2020-02-14',
+              description: 'Happy valentine day',
+              holiday: false,
+          },
+      ]
+    },
+    computed:{
+        classObject(){
+            return this.darkMode ? 
+            {
+                backgroundColor: '#1A202C',
+                base: 'gray-800',
+                hover: 'gray-700',
+                color: {
+                   default: 'white',
+                   holiday: 'red-500',
+                   weekend: 'indigo-400',
+                   selected: 'teal-400',
+                   event: 'blue-500',
+                },
+            } : 
+            {
+                 backgroundColor: '#FFFFFF',
+                 base: 'gray-100',
+                 hover: 'gray-200',
+                 color: {
+                   default: 'gray-700',
+                   holiday: 'red-400',
+                   weekend: 'green-400',
+                   selected: 'red-500',
+                   event: 'indigo-500',
+                },
+            }
         }
     }
 }
@@ -151,7 +185,13 @@ export default {
     <td>className</td>
     <td>Object</td>
     <td>false</td>
-    <td>see example</td>
+    <td>see example, default object is light mode</td>
+  </tr>
+  <tr>
+    <td>eventDate</td>
+    <td>Array</td>
+    <td>false</td>
+    <td>[]</td>
   </tr>
   <tr>
     <td>@change</td>
