@@ -22,13 +22,13 @@ $ npm install vue-tailwind-picker --save
 #### CDN
 
 ```html
-<script src="https://unpkg.com/vue-tailwind-picker@1.0.2/dist/vue-tailwind-picker.min.js"></script>
+<script src="https://unpkg.com/vue-tailwind-picker@1.0.3/dist/vue-tailwind-picker.min.js"></script>
 ```
 
 If you are using native ES Modules, there is also an ES Modules compatible build:
 ```html
 <script type="module">
-  import VueTailwindPicker from 'https://cdn.jsdelivr.net/npm/vue-tailwind-picker@1.0.2/dist/vue-tailwind-picker.esm.js'
+  import VueTailwindPicker from 'https://cdn.jsdelivr.net/npm/vue-tailwind-picker@1.0.3/dist/vue-tailwind-picker.esm.js'
 </script>
 ```
 
