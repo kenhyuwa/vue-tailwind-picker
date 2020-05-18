@@ -1,7 +1,7 @@
 <template>
   <div
     ref="vTailwindPickerRef"
-    class="relative"
+    class="relative select-none"
     v-closable="{
       handler: 'onAway',
       exclude: ['currentPicker'],
@@ -12,7 +12,7 @@
     <transition name="v-tailwind-picker">
       <div
         v-show="showPicker || inline"
-        :style="`--bg-tailwind-picker: ${className.backgroundColor}`"
+        :style="`--bg-tailwind-picker: ${theme.background}`"
       >
         <div
           id="v-tailwind-picker"
@@ -20,14 +20,14 @@
           :class="[
             { 'inline-mode': inline },
             inline ? 'static' : 'absolute bottom-0 inset-x-0',
-            `text-${className.hover}`,
+            theme.currentColor,
           ]"
         >
           <div
             class="w-88 h-auto max-w-xs transition-all duration-150 ease-linear rounded overflow-hidden border"
             :class="[
-              `border-${className.hover}`,
-              `text-${className.color.default}`,
+              theme.border,
+              theme.text,
               inline ? 'shadow-xs' : 'shadow-md',
             ]"
             :style="{ backgroundColor: `var(--bg-tailwind-picker)` }"
@@ -48,11 +48,11 @@
                 </div>
               </div>
             </div>
-            <!--            Day of picker-->
+            <!--            Navigation of picker-->
             <div class="relative p-1">
               <div
                 class="absolute inset-0"
-                :class="`bg-${className.base}`"
+                :class="theme.navigation.background"
               ></div>
               <div class="flex justify-between items-center relative">
                 <div class="flex-shrink-0 w-8">
@@ -67,7 +67,7 @@
                           visiblePrev
                             ? 'cursor-pointer'
                             : 'cursor-not-allowed opacity-30',
-                          `hover:bg-${className.hover}`,
+                          theme.navigation.hover,
                         ]"
                         @click="onPrevious()"
                       >
@@ -89,8 +89,8 @@
                   <div
                     class="flex-1 rounded overflow-hidden py-1 ml-2 mr-1 text-center cursor-pointer transition duration-150 ease-out"
                     :class="[
-                      enableMonth ? `bg-${className.hover}` : '',
-                      `hover:bg-${className.hover}`,
+                      enableMonth ? theme.navigation.focus : '',
+                      theme.navigation.hover,
                     ]"
                     @click="toggleMonth()"
                   >
@@ -99,8 +99,8 @@
                   <div
                     class="flex-1 rounded overflow-hidden py-1 mr-2 ml-1 text-center cursor-pointer transition duration-150 ease-out"
                     :class="[
-                      enableYear ? `bg-${className.hover}` : '',
-                      `hover:bg-${className.hover}`,
+                      enableYear ? theme.navigation.focus : '',
+                      theme.navigation.hover,
                     ]"
                     @click="toggleYear()"
                   >
@@ -120,7 +120,7 @@
                           visibleNext
                             ? 'cursor-pointer'
                             : 'cursor-not-allowed opacity-30',
-                          `hover:bg-${className.hover}`,
+                          theme.navigation.hover,
                         ]"
                         @click="onNext()"
                       >
@@ -146,7 +146,7 @@
                 <div v-if="!enableMonth && !enableYear" class="relative">
                   <div
                     class="flex flex-no-wrap py-2 border-b"
-                    :class="`border-${className.hover}`"
+                    :class="theme.border"
                   >
                     <div
                       v-for="(day, i) in days"
@@ -157,9 +157,9 @@
                         class="leading-relaxed text-sm"
                         :class="[
                           i === 0
-                            ? `text-${className.color.holiday}`
+                            ? theme.picker.holiday
                             : i === 5
-                            ? `text-${className.color.weekend}`
+                            ? theme.picker.weekend
                             : '',
                         ]"
                       >
@@ -175,7 +175,7 @@
                       class="w-1/7 flex justify-center my-2px cursor-not-allowed"
                       :class="[
                         i === previousPicker.length - 1 ? 'rounded-r-full' : '',
-                        `bg-${className.base}`,
+                        theme.navigation.background,
                       ]"
                     >
                       <div
@@ -186,9 +186,9 @@
                           class="text-xs opacity-75"
                           :class="[
                             date.day() === 0
-                              ? `text-${className.color.holiday}`
+                              ? theme.picker.holiday
                               : date.day() === 5
-                              ? `text-${className.color.weekend}`
+                              ? theme.picker.weekend
                               : '',
                           ]"
                         >
@@ -202,11 +202,14 @@
                       :key="`${date.$D}${date.$M}${date.$y}-current`"
                       class="w-1/7 group flex justify-center items-center my-2px"
                     >
-                      <div class="relative rounded-full overflow-hidden">
+                      <div
+                        class="relative overflow-hidden"
+                        :class="theme.picker.rounded"
+                      >
                         <div
                           v-if="date.$events"
                           class="absolute top-0 right-0 h-2 w-2 z-2"
-                          :class="`bg-${className.color.event}`"
+                          :class="theme.picker.event"
                           :style="{
                             backgroundColor: date.$events.color
                               ? date.$events.color
@@ -214,8 +217,9 @@
                           }"
                         ></div>
                         <div
-                          class="relative h-8 w-8 flex justify-center items-center rounded-full overflow-hidden"
+                          class="relative h-8 w-8 flex justify-center items-center overflow-hidden"
                           :class="[
+                            theme.picker.rounded,
                             possibleDate(date)
                               ? 'cursor-pointer'
                               : 'cursor-not-allowed',
@@ -223,13 +227,14 @@
                         >
                           <div
                             v-if="possibleDate(date)"
-                            class="absolute inset-0 rounded-full transition duration-150 ease-in-out border border-dotted border-transparent"
+                            class="absolute inset-0 transition duration-150 ease-in-out border border-dotted border-transparent"
                             :class="[
+                              theme.picker.rounded,
                               possibleDate(date)
-                                ? `hover:border-${className.color.selected}`
+                                ? `hover:${theme.picker.selected.border}`
                                 : '',
                               date.$D === today.$D
-                                ? `bg-${className.color.selected} shadow-xs`
+                                ? `${theme.picker.selected.background} shadow-xs`
                                 : '',
                             ]"
                             @click="changePicker(date)"
@@ -242,10 +247,10 @@
                               :class="[
                                 (holidayDate(date) || date.day() === 0) &&
                                 date.$D !== today.$D
-                                  ? `text-${className.color.holiday}`
+                                  ? theme.picker.holiday
                                   : '',
                                 date.day() === 5 && date.$D !== today.$D
-                                  ? `text-${className.color.weekend}`
+                                  ? theme.picker.weekend
                                   : '',
                                 {
                                   'z-10 text-white ':
@@ -269,7 +274,7 @@
                       class="w-1/7 flex justify-center my-2px cursor-not-allowed"
                       :class="[
                         date.$D === 1 ? 'rounded-l-full' : '',
-                        `bg-${className.base}`,
+                        theme.navigation.background,
                       ]"
                     >
                       <div
@@ -280,9 +285,9 @@
                           class="text-xs opacity-75"
                           :class="[
                             date.day() === 0
-                              ? `text-${className.color.holiday}`
+                              ? theme.picker.holiday
                               : date.day() === 5
-                              ? `text-${className.color.weekend}`
+                              ? theme.picker.weekend
                               : '',
                           ]"
                         >
@@ -307,8 +312,8 @@
                       <div
                         :class="[
                           i === today.$M
-                            ? `border-${className.color.selected}`
-                            : `border-${className.hover} hover:border-${className.color.selected}`,
+                            ? `${theme.picker.selected.border}`
+                            : `${theme.border} ${theme.picker.selected.hover}`,
                         ]"
                         class="w-full flex justify-center items-center py-2 my-1 transition duration-150 ease-out rounded border cursor-pointer"
                         @click="setMonth(i)"
@@ -333,8 +338,8 @@
                       <div
                         :class="[
                           year === today.$y
-                            ? `border-${className.color.selected}`
-                            : `border-${className.hover} hover:border-${className.color.selected}`,
+                            ? `${theme.picker.selected.border}`
+                            : `${theme.border} ${theme.picker.selected.hover}`,
                         ]"
                         class="w-full flex justify-center items-center py-2 my-1 transition duration-150 ease-out rounded border cursor-pointer"
                         @click="setYear(year)"
@@ -357,7 +362,7 @@
                 name="v-tailwind-picker-footer"
                 tag="div"
                 class="flex flex-wrap border-t p-1"
-                :class="`border-${className.hover}`"
+                :class="theme.event.border"
               >
                 <div
                   v-for="(event, i) in currentPicker.filter(
@@ -369,7 +374,7 @@
                   <div class="inline-flex justify-end w-4">
                     <span
                       class="text-xs leading-none"
-                      :class="`text-${className.color.holiday}`"
+                      :class="theme.picker.holiday"
                     >
                       {{ dayjs(event.$events.date, formatDate).$D }}
                     </span>
@@ -447,7 +452,7 @@ export default {
 
           // We check to see if the clicked element is not
           // the dialog element and not excluded
-          if (clickedOnExcludedEl) {
+          if (clickedOnExcludedEl && vnode.context.autoClose) {
             vnode.context[handler]()
           }
           if (!el.contains(e.target) && !clickedOnExcludedEl) {
@@ -526,19 +531,32 @@ export default {
       required: false,
       default: true,
     },
-    className: {
+    theme: {
       type: Object,
       required: false,
       default: () => ({
-        backgroundColor: '#FFFFFF',
-        base: 'gray-100',
-        hover: 'gray-200',
-        color: {
-          default: 'gray-700',
-          holiday: 'red-400',
-          weekend: 'green-400',
-          selected: 'red-500',
-          event: 'indigo-500',
+        background: '#FFFFFF',
+        text: 'text-gray-700',
+        border: 'border-gray-200',
+        currentColor: 'text-gray-200',
+        navigation: {
+          background: 'bg-gray-100',
+          hover: 'hover:bg-gray-200',
+          focus: 'bg-gray-200',
+        },
+        picker: {
+          rounded: 'rounded-full',
+          selected: {
+            background: 'bg-red-500',
+            border: 'border-red-500',
+            hover: 'hover:border-red-500',
+          },
+          holiday: 'text-red-400',
+          weekend: 'text-green-400',
+          event: 'bg-indigo-500',
+        },
+        event: {
+          border: 'border-gray-200',
         },
       }),
     },
@@ -632,6 +650,14 @@ export default {
         return this.endDatepicker.diff(startOf, 'day') > 0
       }
       return true
+    },
+  },
+  watch: {
+    showPicker(prev, next) {
+      if (prev) {
+        this.visibleMonth = next
+        this.visibleYear = next
+      }
     },
   },
   mounted() {
@@ -753,6 +779,11 @@ export default {
 
 #v-tailwind-picker .text-xxs {
   font-size: 0.6rem;
+}
+
+#v-tailwind-picker .my-2px {
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
 #v-tailwind-picker:not(.inline-mode)::before {

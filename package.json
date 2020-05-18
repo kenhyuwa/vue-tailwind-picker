@@ -1,7 +1,7 @@
 {
   "name": "vue-tailwind-picker",
-  "version": "1.0.3",
-  "description": "Datepicker for vue & tailwindcss",
+  "version": "1.1.0",
+  "description": "Datepicker for vue.js of tailwindcss & dayjs",
   "main": "dist/vue-tailwind-picker.umd.js",
   "module": "dist/vue-tailwind-picker.esm.js",
   "unpkg": "dist/vue-tailwind-picker.min.js",

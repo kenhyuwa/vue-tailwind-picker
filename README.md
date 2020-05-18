@@ -1,6 +1,8 @@
 # Vue Tailwind Picker
 >Datepicker for vue.js of tailwindcss & dayjs
 
+[![NPM](https://nodei.co/npm/vue-tailwind-picker.png?compact=true)](https://www.npmjs.com/package/vue-tailwind-picker)
+
 ![Example](https://raw.githubusercontent.com/kenhyuwa/vue-tailwind-picker/master/vue-tailwind-picker.gif)
 
 ##### Default
@@ -16,19 +18,24 @@
 ## Installation
 ### NPM
 ```bash
-$ npm install vue-tailwind-picker --save
+$ npm install vue-tailwind-picker
+```
+
+### Yarn
+```bash
+$ yarn add vue-tailwind-picker
 ```
 
 #### CDN
 
 ```html
-<script src="https://unpkg.com/vue-tailwind-picker@1.0.3/dist/vue-tailwind-picker.min.js"></script>
+<script src="https://unpkg.com/vue-tailwind-picker@1.1.0/dist/vue-tailwind-picker.min.js"></script>
 ```
 
 If you are using native ES Modules, there is also an ES Modules compatible build:
 ```html
 <script type="module">
-  import VueTailwindPicker from 'https://cdn.jsdelivr.net/npm/vue-tailwind-picker@1.0.3/dist/vue-tailwind-picker.esm.js'
+  import VueTailwindPicker from 'https://cdn.jsdelivr.net/npm/vue-tailwind-picker@1.1.0/dist/vue-tailwind-picker.esm.js'
 </script>
 ```
 
@@ -72,8 +79,7 @@ then add to nuxt.config.js
             start-date="2020-01-01"
             end-date="2021-12-31"
             format-date="YYYY-MM-DD"
-            :inline="true"
-            :class-name="classObject"
+            :theme="classObject"
             :event-date="events"
             @change="(v) => (picker = v)"
         >
@@ -116,28 +122,54 @@ export default {
         classObject(){
             return this.darkMode ? 
             {
-                backgroundColor: '#1A202C',
-                base: 'gray-800',
-                hover: 'gray-700',
-                color: {
-                   default: 'white',
-                   holiday: 'red-500',
-                   weekend: 'indigo-400',
-                   selected: 'teal-400',
-                   event: 'blue-500',
+                background: '#1A202C',
+                text: 'text-white',
+                border: 'border-gray-700',
+                currentColor: 'text-gray-200',
+                navigation: {
+                    background: 'bg-gray-800',
+                    hover: 'hover:bg-gray-700',
+                    focus: 'bg-gray-700',
+                },
+                picker: {
+                    rounded: 'rounded-md',
+                    selected: {
+                        background: 'bg-teal-400',
+                        border: 'border-teal-400',
+                        hover: 'hover:border-teal-400',
+                    },
+                    holiday: 'text-red-400',
+                    weekend: 'text-green-400',
+                    event: 'bg-blue-500',
+                },
+                event: {
+                    border: 'border-gray-700',
                 },
             } : 
             {
-                 backgroundColor: '#FFFFFF',
-                 base: 'gray-100',
-                 hover: 'gray-200',
-                 color: {
-                   default: 'gray-700',
-                   holiday: 'red-400',
-                   weekend: 'green-400',
-                   selected: 'red-500',
-                   event: 'indigo-500',
-                },
+                 background: '#FFFFFF',
+                 text: 'text-gray-700',
+                 border: 'border-gray-200',
+                 currentColor: 'text-gray-200',
+                 navigation: {
+                    background: 'bg-gray-100',
+                    hover: 'hover:bg-gray-200',
+                    focus: 'bg-gray-200',
+                 },
+                 picker: {
+                    rounded: 'rounded-full',
+                    selected: {
+                        background: 'bg-red-500',
+                        border: 'border-red-500',
+                        hover: 'hover:border-red-500',
+                    },
+                    holiday: 'text-red-400',
+                    weekend: 'text-green-400',
+                    event: 'bg-indigo-500',
+                 },
+                 event: {
+                    border: 'border-gray-200',
+                 },
             }
         }
     }
@@ -182,7 +214,7 @@ export default {
     <td>false</td>
   </tr>
   <tr>
-    <td>className</td>
+    <td>theme</td>
     <td>Object</td>
     <td>false</td>
     <td>see example, default object is light mode</td>
@@ -199,6 +231,12 @@ export default {
     <td>false</td>
     <td>$emit()</td>
   </tr>
+  <tr>
+    <td>autoClose</td>
+    <td>Boolean</td>
+    <td>false</td>
+    <td>true</td>
+  </tr>
   </tbody>
 </table>
 
@@ -207,4 +245,10 @@ please contribute to be better...
 
 ## License
 
-[MIT](http://opensource.org/licenses/MIT)
+The MIT License (MIT). Please see [LICENSE](http://opensource.org/licenses/MIT) for more information.
+
+## Changelog
+
+Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently
+
+_Made with love by [Ken](https://facebook.com/diaddemi)_
