@@ -23,3 +23,10 @@
 - Fix style when purge tailwindcss is enable
 - Add new props <code>auto-close</code>
 - Fix reset picker when away
+
+## 1.1.1
+- Move dayjs to `peerDependencies`
+
+## 1.1.2
+- Move tailwindcss to `peerDependencies`
+- Move Documentation to [Vue Tailwind Picker](https://vue-tailwind-picker.netlify.app/)
