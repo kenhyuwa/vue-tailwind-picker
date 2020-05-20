@@ -400,7 +400,7 @@
 import dayjs from 'dayjs'
 import isToday from 'dayjs/plugin/isToday'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
-import idBetween from 'dayjs/plugin/isBetween'
+import isBetween from 'dayjs/plugin/isBetween'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
@@ -408,7 +408,7 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 
 dayjs.extend(isToday)
 dayjs.extend(customParseFormat)
-dayjs.extend(idBetween)
+dayjs.extend(isBetween)
 dayjs.extend(localizedFormat)
 dayjs.extend(advancedFormat)
 dayjs.extend(isSameOrBefore)
@@ -422,7 +422,7 @@ export default {
   name: 'VueTailwindPicker',
   directives: {
     closable: {
-      // https://github.com/TahaSh/vue-closable resource
+      // https://github.com/TahaSh/vue-closable // resource
       bind(el, binding, vnode) {
         // Here's the click/touchstart handler
         // (it is registered below)

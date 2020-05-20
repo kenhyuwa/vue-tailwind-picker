@@ -1,6 +1,6 @@
 {
   "name": "vue-tailwind-picker",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Datepicker for vue.js of tailwindcss & dayjs",
   "main": "dist/vue-tailwind-picker.umd.js",
   "module": "dist/vue-tailwind-picker.esm.js",
@@ -13,7 +13,9 @@
     "build": "npm run build:umd & npm run build:es & npm run build:unpkg",
     "build:umd": "rollup --config build/rollup.config.js --format umd --file dist/vue-tailwind-picker.umd.js",
     "build:es": "rollup --config build/rollup.config.js --format es --file dist/vue-tailwind-picker.esm.js",
-    "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/vue-tailwind-picker.min.js"
+    "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/vue-tailwind-picker.min.js",
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
   },
   "files": [
     "dist/*"
@@ -43,9 +45,6 @@
     "url": "https://github.com/kenhyuwa/vue-tailwind-picker/issues",
     "email": "wahyu.dhiraashandy8@gmail.com"
   },
-  "dependencies": {
-    "dayjs": "^1.8.27"
-  },
   "devDependencies": {
     "rollup": "^1.17.0",
     "rollup-plugin-buble": "^0.19.8",
@@ -53,6 +52,10 @@
     "rollup-plugin-vue": "^5.0.1",
     "tailwindcss": "^1.4.6",
     "vue": "^2.6.10",
-    "vue-template-compiler": "^2.6.10"
+    "vue-template-compiler": "^2.6.10",
+    "vuepress": "^1.5.0"
+  },
+  "peerDependencies": {
+    "dayjs": "^1.8.27"
   }
 }
