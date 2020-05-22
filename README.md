@@ -6,17 +6,19 @@
 ![Example](https://raw.githubusercontent.com/kenhyuwa/vue-tailwind-picker/master/vue-tailwind-picker.gif)
 
 ## Documentation
-[Vue Tailwind Picker](https://vue-tailwind-picker.netlify.app/)
-
-## Contributing
-please contribute to be better...
+For more information about `vue-tailwind-picker` please check [here](https://vue-tailwind-picker.netlify.app).
 
 ## License
 
-The MIT License (MIT). Please see [LICENSE](http://opensource.org/licenses/MIT) for more information.
+The MIT License (MIT). Please [see](http://opensource.org/licenses/MIT) for more information.
 
 ## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently
+Please [see](CHANGELOG.md) for more information what has changed recently.
+
+## Donate & Support
+
+If you would like to support development by making a donation you can do so [here](https://paypal.me/kenhyuwa/5usd). &#x1F60A;
+Thank you...
 
 _Made with love by [Ken](https://facebook.com/diaddemi)_
