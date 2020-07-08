@@ -20,7 +20,7 @@
 ## 1.1.0
 - Major update
 - Change props <code>:class-name</code> to <code>:theme</code>
-- Fix style when purge tailwindcss is enable
+- Fix style when purge Tailwind CSS is enable
 - Add new props <code>auto-close</code>
 - Fix reset picker when away
 
@@ -28,5 +28,9 @@
 - Move dayjs to `peerDependencies`
 
 ## 1.1.2
-- Move tailwindcss to `peerDependencies`
+- Move Tailwind CSS to `peerDependencies`
 - Move Documentation to [Vue Tailwind Picker](https://vue-tailwind-picker.netlify.app/)
+
+## 1.1.3
+- Fix bug can't select <code>previous</code> year
+- Add new props <code>:start-from-monday</code> default is <code>false</code>

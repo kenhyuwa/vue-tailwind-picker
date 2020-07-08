@@ -1,5 +1,5 @@
-# Vue Tailwind Picker
->Datepicker for vue.js of tailwindcss & dayjs
+# Tailwind CSS Datepicker Component Vue.js
+>Datepicker component for vue.js build with Tailwind CSS & dayjs date library
 
 [![NPM](https://nodei.co/npm/vue-tailwind-picker.png?compact=true)](https://www.npmjs.com/package/vue-tailwind-picker)
 
@@ -7,6 +7,10 @@
 
 ## Documentation
 For more information about `vue-tailwind-picker` please check [here](https://vue-tailwind-picker.netlify.app).
+
+## Free Tailwind CSS Design Component
+I Also created free component from Tailwind CSS.
+[Tailwind CSS Design](https://tailwindesign.com)
 
 ## License
 

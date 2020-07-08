@@ -12,7 +12,7 @@
     <transition name="v-tailwind-picker">
       <div
         v-show="showPicker || inline"
-        :style="`--bg-tailwind-picker: ${theme.background}`"
+        :style="`--bg-tailwind-picker: ${theme.background};`"
       >
         <div
           id="v-tailwind-picker"
@@ -149,16 +149,16 @@
                     :class="theme.border"
                   >
                     <div
-                      v-for="(day, i) in days"
+                      v-for="day in days"
                       :key="day"
                       class="w-1/7 flex justify-center"
                     >
                       <div
                         class="leading-relaxed text-sm"
                         :class="[
-                          i === 0
+                          day === 'Sun'
                             ? theme.picker.holiday
-                            : i === 5
+                            : day === 'Fri'
                             ? theme.picker.weekend
                             : '',
                         ]"
@@ -284,9 +284,9 @@
                         <div
                           class="text-xs opacity-75"
                           :class="[
-                            date.day() === 0
+                            date.day() === (startFromMonday ? 1 : 0)
                               ? theme.picker.holiday
-                              : date.day() === 5
+                              : date.day() === (startFromMonday ? 6 : 5)
                               ? theme.picker.weekend
                               : '',
                           ]"
@@ -531,6 +531,11 @@ export default {
       required: false,
       default: true,
     },
+    startFromMonday: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     theme: {
       type: Object,
       required: false,
@@ -577,10 +582,10 @@ export default {
       Array(
         this.endDate
           ? endDatepicker.diff(today, 'year') + 1
-          : dayjs().diff(today, 'year') + 36,
+          : today.diff(today, 'year') + 36,
       ),
       (v, i) => {
-        return dayjs().add(i, 'year').$y
+        return today.add(i, 'year').$y
       },
     )
     const visibleMonth = false
@@ -598,34 +603,43 @@ export default {
   },
   computed: {
     days() {
+      const customWeekend = this.startFromMonday ? 1 : 0
       return Array.from(Array(7), (v, i) => {
-        return dayjs().day(i).format('ddd')
+        return dayjs()
+          .day(i + customWeekend)
+          .format('ddd')
       })
     },
     previousPicker() {
+      const customWeekend = this.startFromMonday ? 1 : 0
       const display = []
       const previous = this.today.date(0)
       const current = this.today.date(0)
-      for (let i = 0; i <= current.day(); i++) {
+      for (let i = 0; i <= current.day() - customWeekend; i++) {
         display.push(previous.subtract(i, 'day'))
       }
       return display.sort((a, b) => a.$d - b.$d)
     },
     currentPicker() {
+      const customWeekend = this.startFromMonday ? 1 : 0
       const eventDate = this.eventDate.length > 0 ? this.eventDate : []
-      return Array.from(Array(this.today.daysInMonth()), (v, i) => {
-        const events = this.today.date(++i)
-        events.$events = eventDate.find((o) => {
-          return o.date === events.format(this.formatDate)
-        })
-        return events
-      })
+      return Array.from(
+        Array(this.today.daysInMonth() - customWeekend),
+        (v, i) => {
+          const events = this.today.date(++i)
+          events.$events = eventDate.find((o) => {
+            return o.date === events.format(this.formatDate)
+          })
+          return events
+        },
+      )
     },
     nextPicker() {
+      const customWeekend = this.startFromMonday ? 1 : 0
       const display = []
       const previous = this.previousPicker.length
       const current = this.today.daysInMonth()
-      for (let i = 1; i <= 42 - (previous + current); i++) {
+      for (let i = 1; i <= 42 - (previous + current) + customWeekend; i++) {
         display.push(this.today.date(i).add(1, 'month'))
       }
       return display
