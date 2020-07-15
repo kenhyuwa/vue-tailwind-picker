@@ -1,12 +1,18 @@
-# Tailwind CSS Datepicker Component Vue.js
->Datepicker component for vue.js build with Tailwind CSS & dayjs date library
+# Tailwind CSS Datepicker Component Vue.js + SSR support
+>Datepicker component for vue.js build with Tailwind CSS & day.js date library.
+> Vue Tailwind Picker is support SSR.
 
 [![NPM](https://nodei.co/npm/vue-tailwind-picker.png?compact=true)](https://www.npmjs.com/package/vue-tailwind-picker)
 
+##### Light mode
 ![Example](https://raw.githubusercontent.com/kenhyuwa/vue-tailwind-picker/master/vue-tailwind-picker.gif)
 
+##### Dark mode
+![Example](https://raw.githubusercontent.com/kenhyuwa/vue-tailwind-picker/master/vue-tailwind-picker-dark.png)
+
 ## Documentation
-For more information about `vue-tailwind-picker` please check [here](https://vue-tailwind-picker.netlify.app).
+For more information about `vue-tailwind-picker` please check [here](https://vue-tailwind-picker.netlify.app).(_progress for updated_)
+Read the CHANGELOG.
 
 ## Free Tailwind CSS Design Component
 I Also created free component from Tailwind CSS.

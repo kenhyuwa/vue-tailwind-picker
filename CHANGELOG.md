@@ -34,3 +34,29 @@
 ## 1.1.3
 - Fix bug can't select <code>previous</code> year
 - Add new props <code>:start-from-monday</code> default is <code>false</code>
+
+## 1.1.4
+- :tada: Tailwind CSS Datepicker SSR support now
+- Support empty initial value
+```vue
+<template>
+    <VueTailWindPicker
+        :init="false"
+        @change="(v) => value = v">
+        <input v-model="value" placeholder="Example initial value">
+    </VueTailWindPicker>
+</template>
+// ... 
+<script >
+    export default {
+        components: { VueTailWindPicker: () => import('vue-tailwind-picker'), },
+        data(){
+            return {
+                value: ''
+            }
+        },
+        // ...
+    }
+</script>
+```
+- Add new props `init`, default `true`, if `true` set initial value with `start-date`, else set value with default value from `v-model` of input.

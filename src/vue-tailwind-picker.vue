@@ -7,13 +7,11 @@
       exclude: ['currentPicker'],
     }"
     @click="onFeedBack"
+    :style="`--bg-tailwind-picker: ${theme.background};`"
   >
     <slot></slot>
     <transition name="v-tailwind-picker">
-      <div
-        v-show="showPicker || inline"
-        :style="`--bg-tailwind-picker: ${theme.background};`"
-      >
+      <div v-show="showPicker || inline">
         <div
           id="v-tailwind-picker"
           class="bg-transparent mt-3 z-10"
@@ -418,6 +416,11 @@ let handleOutsideClick
 
 // import './css/tailwind.css' // Development only
 
+/**
+ * Author: kenhyuwa <wahyu.dhiraashandy8@gmail.com
+ * Url: https://github.com/kenhyuwa
+ **/
+
 export default {
   name: 'VueTailwindPicker',
   directives: {
@@ -476,6 +479,11 @@ export default {
     },
   },
   props: {
+    init: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
     startDate: {
       type: String,
       required: false,
@@ -567,10 +575,12 @@ export default {
     },
   },
   data() {
-    const startDatepicker = dayjs(this.startDate, this.formatDate).add(
-      dayjs().hour() >= 20 ? 1 : 0,
-      'day',
-    )
+    const startDatepicker = dayjs(this.startDate, this.formatDate)
+    // Featured for my own project
+    //   .add(
+    //   dayjs().hour() >= 20 ? 1 : 0,
+    //   'day',
+    // )
     const endDatepicker = this.endDate
       ? dayjs(this.endDate, this.formatDate)
       : undefined
@@ -590,6 +600,7 @@ export default {
     )
     const visibleMonth = false
     const visibleYear = false
+    const showPicker = false
     return {
       startDatepicker,
       endDatepicker,
@@ -598,7 +609,7 @@ export default {
       months,
       visibleYear,
       years,
-      showPicker: false,
+      showPicker,
     }
   },
   computed: {
@@ -675,13 +686,10 @@ export default {
     },
   },
   mounted() {
-    this.init()
+    if (this.init) this.emit()
   },
   methods: {
     dayjs,
-    init() {
-      this.emit()
-    },
     emit() {
       this.$emit('change', this.today.format(this.formatDate))
     },

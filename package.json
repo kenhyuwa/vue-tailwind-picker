@@ -1,6 +1,6 @@
 {
   "name": "vue-tailwind-picker",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "Datepicker component for vue.js build with Tailwind CSS & dayjs date library",
   "main": "dist/vue-tailwind-picker.umd.js",
   "module": "dist/vue-tailwind-picker.esm.js",
@@ -29,7 +29,7 @@
   "author": {
     "name": "kenhyuwa",
     "email": "wahyu.dhiraashandy8@gmail.com",
-    "url": "https://tailwindesign.com.com"
+    "url": "https://tailwindesign.com"
   },
   "contributors": [],
   "license": "MIT",
