@@ -484,6 +484,10 @@ export default {
       required: false,
       default: true,
     },
+    selectedDate: {
+      type: String,
+      required: false,
+    },
     startDate: {
       type: String,
       required: false,
@@ -584,7 +588,9 @@ export default {
     const endDatepicker = this.endDate
       ? dayjs(this.endDate, this.formatDate)
       : undefined
-    const today = dayjs(startDatepicker, this.formatDate)
+    const today = this.selectedDate && this.startDate < this.selectedDate
+      ? dayjs(this.selectedDate, this.formatDate)
+      : dayjs(startDatepicker, this.formatDate);
     const months = Array.from(Array(12), (v, i) => {
       return dayjs().month(i).format('MMMM')
     })
