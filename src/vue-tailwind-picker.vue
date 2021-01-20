@@ -511,6 +511,7 @@ export default {
     formatDate: {
       type: String,
       required: false,
+      default: 'YYYY-MM-DD',
     },
     // Confused with this
     formatDisplay: {
