@@ -491,7 +491,6 @@ export default {
     startDate: {
       type: String,
       required: false,
-      default: dayjs().format('YYYY-MM-DD'),
     },
     endDate: {
       type: String,
@@ -579,7 +578,7 @@ export default {
     },
   },
   data() {
-    const startDatepicker = dayjs(this.startDate, this.formatDate)
+    const startDatepicker = this.startDate ? dayjs(this.startDate, this.formatDate) : dayjs()
     // Featured for my own project
     //   .add(
     //   dayjs().hour() >= 20 ? 1 : 0,
