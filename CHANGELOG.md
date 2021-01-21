@@ -60,3 +60,9 @@
 </script>
 ```
 - Add new props `init`, default `true`, if `true` set initial value with `start-date`, else set value with default value from `v-model` of input.
+
+## 1.1.5
+- Add selected props to props
+
+## 1.1.6
+- Fix issues format date
