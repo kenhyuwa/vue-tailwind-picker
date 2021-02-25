@@ -53,6 +53,6 @@
   },
   "peerDependencies": {
     "dayjs": "^1.8.27",
-    "tailwindcss": "^1.4.6"
+    "tailwindcss": "^2.0.0"
   }
 }
