@@ -1,3 +1,6 @@
+# :warning: This repository is unmaintainable.
+
+> please move to [Litepie Datepicker](https://github.com/kenhyuwa/litepie-datepicker) for Vue 3 & Tailwind CSS 2
 # Tailwind CSS Datepicker Component Vue.js + SSR support
 > Datepicker component for vue.js built with Tailwind CSS, and the day.js date library.
 > 
