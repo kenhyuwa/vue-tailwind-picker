@@ -66,3 +66,6 @@
 
 ## 1.1.6
 - Fix issues format date
+
+## 2.0.0
+- Added support for Tailwind CSS 2.0.0

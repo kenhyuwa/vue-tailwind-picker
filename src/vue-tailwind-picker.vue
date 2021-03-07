@@ -143,7 +143,7 @@
               <transition name="v-tailwind-picker-body">
                 <div v-if="!enableMonth && !enableYear" class="relative">
                   <div
-                    class="flex flex-no-wrap py-2 border-b"
+                    class="flex flex-nowrap py-2 border-b"
                     :class="theme.border"
                   >
                     <div
